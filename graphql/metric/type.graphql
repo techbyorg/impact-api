@@ -1,0 +1,15 @@
+type Metric {
+  id: ID!
+  slug: String!
+  name: String
+  datapoints: JSON # FIXME
+}
+
+type MetricConnection {
+  nodes: [Metric!]
+  totalCount: Int
+}
+
+extend type Query {
+  metrics(orgId: String, startDate: String, endDate: String, timeScale: String): MetricConnection
+}
