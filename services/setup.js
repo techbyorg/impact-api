@@ -15,7 +15,7 @@ function sharedSetup () {
     persistentHost: config.REDIS.PERSISTENT_HOST,
     port: config.REDIS.port
   })
-  cknex.setup('impact_api', config.SCYLLA.CONTACT_POINTS)
+  cknex.setup('impact', config.SCYLLA.CONTACT_POINTS)
   elasticsearch.setup(`${config.ELASTICSEARCH.HOST}:9200`)
   PubSub.setup(config.REDIS.PUB_SUB_HOST, config.REDIS.PORT, config.REDIS.PUB_SUB_PREFIX)
 }

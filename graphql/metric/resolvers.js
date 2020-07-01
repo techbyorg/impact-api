@@ -4,14 +4,14 @@ import Moment from 'moment'
 import momentRange from 'moment-range'
 import { Time } from 'backend-shared'
 
+import Metric from './model.js'
+
 const { extendMoment } = momentRange
 const moment = extendMoment(Moment)
 
-// import Metric from './model.js'
-
 export default {
   Query: {
-    metrics: async (rootValue, { orgId, startDate, endDate, timeScale = 'day' }) => {
+    metrics: async (rootValue, { teamId, startDate, endDate, timeScale = 'day' }) => {
       // FIXME: pull from upchieve for now
       console.log('metr', startDate, endDate)
 
@@ -32,7 +32,7 @@ export default {
       console.log('get...')
 
       const upchieveRes = await request(
-        `http://localhost:3000/metrics?minTime=${startDate}&maxTime=${endDate}`
+        `http://localhost:3000/metrics?minTime=${startDate}&maxTime=${endDate}&timeScale=${timeScale}`
         , { json: true }
       )
 
@@ -45,6 +45,17 @@ export default {
       })
 
       return { nodes: metrics }
+    }
+  },
+
+  Block: {
+    metrics: async (block) => {
+      // TODO: get all metrics w/ a loader
+      // maybe pass in separate loader for getting all datapoints?
+      const metric = await Metric.getById(block.metricIds[0].id)
+      if (metric) {
+        return [metric]
+      }
     }
   }
 }

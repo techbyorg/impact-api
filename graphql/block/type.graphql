@@ -1,0 +1,19 @@
+type Block {
+  id: ID!
+  slug: String!
+  name: String
+  dashboardId: ID!
+}
+
+type BlockConnection {
+  nodes: [Block!]
+  totalCount: Int
+}
+
+extend type Query {
+  blocks(slug: String): BlockConnection
+}
+
+extend type Dashboard {
+  blocks(limit: Int): BlockConnection
+}

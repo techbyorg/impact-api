@@ -23,7 +23,7 @@ const config = {
     PUB_SUB_HOST: env.REDIS_PUB_SUB_HOST || 'localhost'
   },
   SCYLLA: {
-    KEYSPACE: 'impact_api',
+    KEYSPACE: 'impact',
     PORT: 9042,
     CONTACT_POINTS: (env.SCYLLA_CONTACT_POINTS || 'localhost').split(',')
   },

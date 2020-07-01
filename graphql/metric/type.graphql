@@ -1,8 +1,7 @@
 type Metric {
   id: ID!
-  slug: String!
+  teamId: ID!
   name: String
-  datapoints: JSON # FIXME
 }
 
 type MetricConnection {
@@ -11,5 +10,9 @@ type MetricConnection {
 }
 
 extend type Query {
-  metrics(orgId: String, startDate: String, endDate: String, timeScale: String): MetricConnection
+  metrics(teamId: String, startDate: String, endDate: String, timeScale: String): MetricConnection
+}
+
+extend type Block {
+  metrics: Metric
 }

@@ -1,0 +1,13 @@
+type Datapoint {
+  id: ID!
+  value: JSON
+}
+
+type DatapointConnection {
+  nodes: [Datapoint!]
+  totalCount: Int
+}
+
+extend type Metric {
+  datapoints(limit: Int): DatapointConnection
+}

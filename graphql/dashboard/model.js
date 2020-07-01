@@ -1,15 +1,14 @@
 import { Base, cknex } from 'backend-shared'
 
-class MetricModel extends Base {
+class BlockModel extends Base {
   getScyllaTables () {
     return [
       {
-        name: 'metrics_by_id',
+        name: 'dashboards_by_id',
         keyspace: 'impact',
         fields: {
           id: 'timeuuid',
           slug: 'text',
-          name: 'text',
           teamId: 'uuid'
         },
         primaryKey: {
@@ -17,7 +16,13 @@ class MetricModel extends Base {
           clusteringColumns: null
         },
         materializedViews: {
-          metrics_by_teamId: {
+          dashboards_by_slug: {
+            primaryKey: {
+              partitionKey: ['slug'],
+              clusteringColumns: ['id']
+            }
+          },
+          dashboards_by_teamId: {
             primaryKey: {
               partitionKey: ['teamId'],
               clusteringColumns: ['id']
@@ -28,12 +33,12 @@ class MetricModel extends Base {
     ]
   }
 
-  getById (id) {
+  getAllByTeamId (teamId) {
     return cknex().select('*')
-      .from('metrics_by_id')
-      .where('id', '=', id)
-      .run({ isSingle: true })
+      .from('dashboards_by_teamId')
+      .where('teamId', '=', teamId)
+      .run()
   }
 }
 
-export default new MetricModel()
+export default new BlockModel()
