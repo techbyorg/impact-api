@@ -12,7 +12,8 @@ class BlockModel extends Base {
           name: 'text',
           dashboardId: 'uuid',
           metricIds: 'json', // [{id: <metric id>}], flexible for other settings
-          teamId: 'uuid'
+          orgId: 'uuid',
+          settings: 'json'
         },
         primaryKey: {
           partitionKey: ['id'],
@@ -41,6 +42,7 @@ class BlockModel extends Base {
       .from('blocks_by_dashboardId')
       .where('dashboardId', '=', dashboardId)
       .run()
+      .map(this.defaultOutput)
   }
 }
 

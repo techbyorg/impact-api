@@ -1,6 +1,7 @@
 type Datapoint {
   id: ID!
-  value: JSON
+  scaledTime: String!
+  count: Int
 }
 
 type DatapointConnection {
@@ -9,5 +10,5 @@ type DatapointConnection {
 }
 
 extend type Metric {
-  datapoints(limit: Int): DatapointConnection
+  datapoints(startDate: String, endDate: String, timeScale: String): DatapointConnection
 }

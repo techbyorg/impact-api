@@ -3,6 +3,7 @@ type Block {
   slug: String!
   name: String
   dashboardId: ID!
+  settings: JSON
 }
 
 type BlockConnection {
@@ -11,7 +12,7 @@ type BlockConnection {
 }
 
 extend type Query {
-  blocks(slug: String): BlockConnection
+  blocks(dashboardId: ID!): BlockConnection
 }
 
 extend type Dashboard {

@@ -9,23 +9,18 @@ class BlockModel extends Base {
         fields: {
           id: 'timeuuid',
           slug: 'text',
-          teamId: 'uuid'
+          name: 'text',
+          orgId: 'uuid'
         },
         primaryKey: {
           partitionKey: ['id'],
-          clusteringColumns: null
+          clusteringColumns: ['orgId']
         },
         materializedViews: {
-          dashboards_by_slug: {
+          dashboards_by_orgId_and_slug: {
             primaryKey: {
-              partitionKey: ['slug'],
-              clusteringColumns: ['id']
-            }
-          },
-          dashboards_by_teamId: {
-            primaryKey: {
-              partitionKey: ['teamId'],
-              clusteringColumns: ['id']
+              partitionKey: ['orgId'],
+              clusteringColumns: ['slug', 'id']
             }
           }
         }
@@ -33,11 +28,21 @@ class BlockModel extends Base {
     ]
   }
 
-  getAllByTeamId (teamId) {
+  getAllByOrgId (orgId) {
     return cknex().select('*')
-      .from('dashboards_by_teamId')
-      .where('teamId', '=', teamId)
+      .from('dashboards_by_orgId_and_slug')
+      .where('orgId', '=', orgId)
       .run()
+      .map(this.defaultOutput)
+  }
+
+  getByOrgIdAndSlug (orgId, slug) {
+    return cknex().select('*')
+      .from('dashboards_by_orgId_and_slug')
+      .where('orgId', '=', orgId)
+      .andWhere('slug', '=', slug)
+      .run({ isSingle: true })
+      .then(this.defaultOutput)
   }
 }
 

@@ -10,5 +10,6 @@ type DashboardConnection {
 }
 
 extend type Query {
-  dashboards(teamId: String): DashboardConnection
+  dashboards(orgId: String): DashboardConnection
+  dashboard(orgId: String, slug: String): Dashboard
 }

@@ -4,18 +4,20 @@ class DatapointModel extends Base {
   getScyllaTables () {
     return [
       {
-        name: 'datapoints_by_metricId',
+        name: 'datapoints_by_metricId_and_time',
         keyspace: 'impact',
         fields: {
           id: 'timeuuid',
           metricId: 'uuid',
-          value: 'json', // TODO
-          scaledTime: 'text', // <yyyy-mm>, <yyyy-mm-dd>, etc...
-          timeBucket: 'text'
+          dimensionName: { type: 'text', defaultFn: () => 'all' }, // eg state, zip
+          dimensionValue: { type: 'text', defaultFn: () => 'all' },
+          scaledTime: { type: 'text', defaultFn: () => 'all' }, // <yyyy-mm>, <yyyy-mm-dd>, <all>, etc...
+          timeBucket: { type: 'text', defaultFn: () => 'all' },
+          count: 'counter'
         },
         primaryKey: {
           partitionKey: ['metricId', 'timeBucket'],
-          clusteringColumns: ['scaledTime']
+          clusteringColumns: ['scaledTime', 'dimensionName', 'dimensionValue', 'id']
         },
         withClusteringOrderBy: ['scaledTime', 'desc']
       }
@@ -27,6 +29,7 @@ class DatapointModel extends Base {
       .from('datapoints_by_metricId')
       .where('metricId', '=', metricId)
       .run()
+      .map(this.defaultOutput)
   }
 
   // FIXME: get by time bucket / scaledTime
@@ -35,6 +38,7 @@ class DatapointModel extends Base {
       .from('datapoints_by_metricId')
       .where('metricId', 'IN', metricIds)
       .run()
+      .map(this.defaultOutput)
   }
 }
 

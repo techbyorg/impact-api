@@ -1,4 +1,3 @@
-import fs from 'fs'
 import cors from 'cors'
 import express from 'express'
 import Promise from 'bluebird'

@@ -1,6 +1,6 @@
 type Metric {
   id: ID!
-  teamId: ID!
+  orgId: ID!
   name: String
 }
 
@@ -9,10 +9,10 @@ type MetricConnection {
   totalCount: Int
 }
 
-extend type Query {
-  metrics(teamId: String, startDate: String, endDate: String, timeScale: String): MetricConnection
-}
+# extend type Query {
+#   metrics(orgId: String, startDate: String, endDate: String, timeScale: String): MetricConnection
+# }
 
 extend type Block {
-  metrics: Metric
+  metrics: MetricConnection
 }

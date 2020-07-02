@@ -10,16 +10,16 @@ class MetricModel extends Base {
           id: 'timeuuid',
           slug: 'text',
           name: 'text',
-          teamId: 'uuid'
+          orgId: 'uuid'
         },
         primaryKey: {
           partitionKey: ['id'],
           clusteringColumns: null
         },
         materializedViews: {
-          metrics_by_teamId: {
+          metrics_by_orgId: {
             primaryKey: {
-              partitionKey: ['teamId'],
+              partitionKey: ['orgId'],
               clusteringColumns: ['id']
             }
           }
@@ -33,6 +33,15 @@ class MetricModel extends Base {
       .from('metrics_by_id')
       .where('id', '=', id)
       .run({ isSingle: true })
+      .then(this.defaultOutput)
+  }
+
+  getAllByIds (ids) {
+    return cknex().select('*')
+      .from('metrics_by_id')
+      .where('id', 'IN', ids)
+      .run()
+      .map(this.defaultOutput)
   }
 }
 
