@@ -9,7 +9,7 @@ class DatapointModel extends Base {
         fields: {
           id: 'timeuuid',
           metricId: 'uuid',
-          dimensionName: { type: 'text', defaultFn: () => 'all' }, // eg state, zip
+          dimensionSlug: { type: 'text', defaultFn: () => 'all' }, // eg state, zip
           dimensionValue: { type: 'text', defaultFn: () => 'all' },
           scaledTime: { type: 'text', defaultFn: () => 'all' }, // <yyyy-mm>, <yyyy-mm-dd>, <all>, etc...
           timeBucket: { type: 'text', defaultFn: () => 'all' },
@@ -17,7 +17,7 @@ class DatapointModel extends Base {
         },
         primaryKey: {
           partitionKey: ['metricId', 'timeBucket'],
-          clusteringColumns: ['scaledTime', 'dimensionName', 'dimensionValue', 'id']
+          clusteringColumns: ['scaledTime', 'dimensionSlug', 'dimensionValue', 'id']
         },
         withClusteringOrderBy: ['scaledTime', 'desc']
       }

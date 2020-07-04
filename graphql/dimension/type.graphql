@@ -1,0 +1,15 @@
+type Dimension {
+  id: ID!
+  orgId: ID!
+  slug: String!
+  name: String
+}
+
+type DimensionConnection {
+  nodes: [Dimension!]
+  totalCount: Int
+}
+
+extend type Metric {
+  dimensions: DimensionConnection
+}

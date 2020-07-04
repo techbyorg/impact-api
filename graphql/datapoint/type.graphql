@@ -1,6 +1,8 @@
 type Datapoint {
   id: ID!
   scaledTime: String!
+  dimensionSlug: String
+  dimensionValue: String
   count: Int
 }
 
@@ -9,6 +11,6 @@ type DatapointConnection {
   totalCount: Int
 }
 
-extend type Metric {
+extend type Dimension {
   datapoints(startDate: String, endDate: String, timeScale: String): DatapointConnection
 }

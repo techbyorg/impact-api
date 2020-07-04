@@ -15,17 +15,12 @@ const metricLoader = Loader.withContext(async (ids, context) => {
 export default {
   Block: {
     metrics: async (block, args, context) => {
-      // TODO: get all metrics w/ a loader
-      // maybe pass in separate loader for getting all datapoints?
-      console.log('mbbb', block.metricIds)
       let metrics = await Promise.map(
         block.metricIds,
         ({ id }) => metricLoader(context).load(id)
       )
 
-      // FIXME: this is getting set on wrong metric if metric is in 2 blocks
       metrics = _.map(metrics, (metric) => ({ ...metric, _block: block }))
-      console.log('mm', metrics)
       return GraphqlFormatter.fromScylla(metrics)
     }
   }

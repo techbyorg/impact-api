@@ -1,28 +1,26 @@
 import { Base, cknex } from 'backend-shared'
 
-class MetricModel extends Base {
+class DimensionModel extends Base {
   getScyllaTables () {
     return [
       {
-        name: 'metrics_by_id',
+        name: 'dimensions_by_slug',
         keyspace: 'impact',
         fields: {
-          id: 'timeuuid',
           slug: 'text',
+          id: 'timeuuid', // only used for getting creation time
           name: 'text',
-          orgId: 'uuid',
-          unit: { type: 'text', defaultFn: () => 'custom' }, // seconds, minutes, hours, dollars, etc...
-          dimensionSlugs: { type: 'set', subType: 'text', defaultFn: () => [] }
+          orgId: 'uuid'
         },
         primaryKey: {
-          partitionKey: ['id'],
+          partitionKey: ['slug'],
           clusteringColumns: null
         },
         materializedViews: {
-          metrics_by_orgId: {
+          dimensions_by_orgId: {
             primaryKey: {
               partitionKey: ['orgId'],
-              clusteringColumns: ['id']
+              clusteringColumns: ['slug']
             }
           }
         }
@@ -30,21 +28,21 @@ class MetricModel extends Base {
     ]
   }
 
-  getById (id) {
+  getBySlug (slug) {
     return cknex().select('*')
-      .from('metrics_by_id')
-      .where('id', '=', id)
+      .from('dimensions_by_slug')
+      .where('slug', '=', slug)
       .run({ isSingle: true })
       .then(this.defaultOutput)
   }
 
-  getAllByIds (ids) {
+  getAllBySlugs (slugs) {
     return cknex().select('*')
-      .from('metrics_by_id')
-      .where('id', 'IN', ids)
+      .from('dimensions_by_slug')
+      .where('slug', 'IN', slugs)
       .run()
       .map(this.defaultOutput)
   }
 }
 
-export default new MetricModel()
+export default new DimensionModel()

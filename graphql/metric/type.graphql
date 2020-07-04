@@ -1,17 +1,15 @@
 type Metric {
   id: ID!
   orgId: ID!
+  slug: String!
   name: String
+  unit: String
 }
 
 type MetricConnection {
   nodes: [Metric!]
   totalCount: Int
 }
-
-# extend type Query {
-#   metrics(orgId: String, startDate: String, endDate: String, timeScale: String): MetricConnection
-# }
 
 extend type Block {
   metrics: MetricConnection
