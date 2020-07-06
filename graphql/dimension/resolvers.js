@@ -1,16 +1,16 @@
 import _ from 'lodash'
 import Promise from 'bluebird'
-import { GraphqlFormatter, Loader } from 'backend-shared'
+import { GraphqlFormatter, Loader, cknex } from 'backend-shared'
 
 import Dimension from './model.js'
 
-const dimensionLoader = Loader.withContext(async (slugs, context) => {
-  return Dimension.getAllBySlugs(_.filter(slugs, (slug) => slug !== 'all'))
+const dimensionLoader = Loader.withContext(async (ids, context) => {
+  return Dimension.getAllByIds(_.filter(ids, (id) => id !== cknex.emptyUuid))
     .then((dimensions) => {
-      dimensions = _.keyBy(dimensions, 'slug')
-      return _.map(slugs, slug =>
-        slug === 'all' ? { slug: 'all' } : { slug } // FIXME: add upchieve dimensions: dimensions[slug]
-      )
+      dimensions = _.keyBy(dimensions, 'id')
+      return _.map(ids, id => {
+        return id === cknex.emptyUuid ? { id: cknex.emptyUuid, slug: 'all' } : dimensions[id]
+      })
     })
 })
 
@@ -18,18 +18,19 @@ export default {
   Metric: {
     dimensions: async (metric, args, context) => {
       const block = metric._block
-      let dimensionSlugs = (metric.dimensionSlugs || []).concat('all')
+      let dimensionIds = (metric.dimensionIds || []).concat(cknex.emptyUuid)
       if (block) {
-        const blockDimensionSlugs = _.find(block.metricIds, { id: metric.id })?.dimensionSlugs
-        if (blockDimensionSlugs) {
-          dimensionSlugs = blockDimensionSlugs
+        const blockDimensionIds = _.find(block.metricIds, { id: metric.id })?.dimensionIds
+        if (!_.isEmpty(blockDimensionIds)) {
+          dimensionIds = blockDimensionIds
         }
       }
-      let dimensions = await Promise.map(
-        dimensionSlugs, (slug) => dimensionLoader(context).load(slug)
-      )
 
-      dimensions = _.map(dimensions, (dimension) => ({ ...dimension, _metric: metric }))
+      const dimensions = await Promise.map(dimensionIds, async (id) => {
+        const dimension = await dimensionLoader(context).load(id)
+        return { ...dimension, _metric: metric }
+      })
+
       return GraphqlFormatter.fromScylla(dimensions)
     }
   }

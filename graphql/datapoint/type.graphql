@@ -1,9 +1,9 @@
 type Datapoint {
   id: ID!
   scaledTime: String!
-  dimensionSlug: String
+  dimensionId: ID
   dimensionValue: String
-  count: Int
+  count: Float
 }
 
 type DatapointConnection {

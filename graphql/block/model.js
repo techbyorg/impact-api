@@ -14,7 +14,6 @@ class BlockModel extends Base {
           metricIds: 'json', // [{id: <metric id>}], flexible for other settings
           orgId: 'uuid',
           settings: 'json'
-          // TODO: way to perform transforms on data. eg line chart of metric x divided by metric y
         },
         primaryKey: {
           partitionKey: ['id'],

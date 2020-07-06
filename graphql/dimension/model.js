@@ -4,23 +4,23 @@ class DimensionModel extends Base {
   getScyllaTables () {
     return [
       {
-        name: 'dimensions_by_slug',
+        name: 'dimensions_by_id',
         keyspace: 'impact',
         fields: {
+          id: 'timeuuid',
           slug: 'text',
-          id: 'timeuuid', // only used for getting creation time
           name: 'text',
           orgId: 'uuid'
         },
         primaryKey: {
-          partitionKey: ['slug'],
-          clusteringColumns: null
+          partitionKey: ['id'],
+          clusteringColumns: ['orgId']
         },
         materializedViews: {
           dimensions_by_orgId: {
             primaryKey: {
               partitionKey: ['orgId'],
-              clusteringColumns: ['slug']
+              clusteringColumns: ['slug', 'id']
             }
           }
         }
@@ -28,18 +28,36 @@ class DimensionModel extends Base {
     ]
   }
 
-  getBySlug (slug) {
+  getById (id) {
     return cknex().select('*')
-      .from('dimensions_by_slug')
-      .where('slug', '=', slug)
+      .from('dimensions_by_id')
+      .where('id', '=', id)
       .run({ isSingle: true })
       .then(this.defaultOutput)
   }
 
-  getAllBySlugs (slugs) {
+  getAllByIds (ids) {
     return cknex().select('*')
-      .from('dimensions_by_slug')
-      .where('slug', 'IN', slugs)
+      .from('dimensions_by_id')
+      .where('id', 'IN', ids)
+      .run()
+      .map(this.defaultOutput)
+  }
+
+  getByOrgIdAndSlug (orgId, slug) {
+    return cknex().select('*')
+      .from('dimensions_by_orgId')
+      .where('orgId', '=', orgId)
+      .andWhere('slug', '=', slug)
+      .run({ isSingle: true })
+      .then(this.defaultOutput)
+  }
+
+  getAllByOrgIdAndSlugs (orgId, slugs) {
+    return cknex().select('*')
+      .from('dimensions_by_orgId')
+      .where('orgId', '=', orgId)
+      .andWhere('slug', 'IN', slugs)
       .run()
       .map(this.defaultOutput)
   }

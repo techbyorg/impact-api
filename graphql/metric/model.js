@@ -12,17 +12,25 @@ class MetricModel extends Base {
           name: 'text',
           orgId: 'uuid',
           unit: { type: 'text', defaultFn: () => 'custom' }, // seconds, minutes, hours, dollars, etc...
-          dimensionSlugs: { type: 'set', subType: 'text', defaultFn: () => [] }
+          type: { type: 'text', defaultFn: () => 'standard' }, // standard | derived
+          transforms: { type: 'json', defaultFn: () => [] }, // for derived metrics
+          // cannot use set here
+          // `WHERE orgId=<orgId> AND slug IN <slugs>` gives Cannot restrict clustering columns by IN relations when a collection is selected by the query
+          // https://github.com/scylladb/scylla/issues/4251 (though I don't think they pegged issue properly)
+          // might just be intentional though https://stackoverflow.com/questions/43580321/cannot-restrict-clustering-columns-by-in-relations-when-a-collection-is-selected?rq=1#comment74210466_43580321
+          // dimensionIds: { type: 'set', subType: 'uuid', defaultFn: () => [] }
+          dimensionIds: { type: 'json', defaultFn: () => [] } // [<dimensionId>]
+
         },
         primaryKey: {
           partitionKey: ['id'],
-          clusteringColumns: null
+          clusteringColumns: ['orgId']
         },
         materializedViews: {
           metrics_by_orgId: {
             primaryKey: {
               partitionKey: ['orgId'],
-              clusteringColumns: ['id']
+              clusteringColumns: ['slug', 'id']
             }
           }
         }
@@ -42,6 +50,15 @@ class MetricModel extends Base {
     return cknex().select('*')
       .from('metrics_by_id')
       .where('id', 'IN', ids)
+      .run()
+      .map(this.defaultOutput)
+  }
+
+  getAllByOrgIdAndSlugs (orgId, slugs) {
+    return cknex().select('*')
+      .from('metrics_by_orgId')
+      .where('orgId', '=', orgId)
+      .andWhere('slug', 'IN', slugs)
       .run()
       .map(this.defaultOutput)
   }

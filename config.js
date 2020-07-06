@@ -11,9 +11,9 @@ const {
 } = process
 
 const config = {
-  PORT: env.IRS_990_PORT || 3000,
+  PORT: env.IMPACT_PORT || 3000,
   ENV: env.DEBUG_ENV || env.NODE_ENV,
-  MAX_CPU: env.IRS_990_API_MAX_CPU || 1,
+  MAX_CPU: env.IMPACT_API_MAX_CPU || 1,
   REDIS: {
     PREFIX: 'impact_api',
     PUB_SUB_PREFIX: 'impact_api_pub_sub',

@@ -1,27 +1,32 @@
 import _ from 'lodash'
-import request from 'request-promise'
-// import Moment from 'moment'
-// import momentRange from 'moment-range'
-import { GraphqlFormatter, Loader } from 'backend-shared'
-import ZipCodeData from 'zipcode-data' // FIXME: eventually rm (after upchieve)
+import Promise from 'bluebird'
+import { GraphqlFormatter, Loader, Time, cknex } from 'backend-shared'
 
-// import Datapoint from './model.js'
-
-// const { extendMoment } = momentRange
-// const moment = extendMoment(Moment)
+import Datapoint from './model.js'
 
 const datapointLoader = Loader.withContext(async (options, context) => {
+  options = _.map(options, (option) => {
+    const [metricId, dimensionId, startDate, endDate, timeScale] = option.split(':')
+    return { metricId, dimensionId, startDate, endDate, timeScale }
+  })
   const { startDate, endDate, timeScale } = options[0]
-  const metricSlugs = _.map(options, 'metricSlug')
-  const metrics = await getUpchieveMetrics({ metricSlugs, startDate, endDate, timeScale })
-  return _.map(
-    options,
-    ({ metricSlug, dimensionSlug }) => {
-      const datapoints = _.find(metrics, { slug: metricSlug })?.datapoints || []
-      return _.filter(datapoints, { dimensionSlug })
-    }
+  console.log(startDate, endDate, timeScale)
+  const minScaledTime = Time.getScaledTimeByTimeScale(timeScale, startDate)
+  const maxScaledTime = Time.getScaledTimeByTimeScale(timeScale, endDate)
+
+  // combining into 1 query doesn't really work...
+  // multi-column `WHERE (metricId, dimensionId, timeBucket) in (...)` doesn't work for primaryKeys
+  // const datapoints = await Datapoint.getAllByMetricIdsAndDimensionIdsAndTimes(
+  //   metricIds, dimensionIds, { minScaledTime, maxScaledTime }
+  // )
+
+  return Promise.map(options, ({ metricId, dimensionId }) => {
+    return Datapoint.getAllByMetricIdAndDimensionIdAndTimes(metricId, dimensionId, {
+      minScaledTime, maxScaledTime
+    })
+  }
   )
-})
+}, { batchScheduleFn: (callback) => setTimeout(callback, 10) })
 
 export default {
   Dimension: {
@@ -29,74 +34,94 @@ export default {
       const metric = dimension._metric
       const block = metric._block
 
-      if (block?.settings.type === 'us-map' || block?.settings.dimensionSlug) {
+      if (block?.settings.type === 'us-map' || block?.settings.dimensionId) {
         timeScale = 'all'
       }
 
-      let datapoints = await datapointLoader(context).load({
-        metricSlug: metric.slug, dimensionSlug: dimension.slug, startDate, endDate, timeScale
-      })
-
-      if (['overview', 'bar', 'pie'].includes(block?.settings.type)) {
-        const datapointsGroups = _.groupBy(datapoints, ({ dimensionSlug, dimensionValue }) =>
-          [dimensionSlug, dimensionValue].join(':')
+      let datapoints
+      if (metric.type === 'derived') {
+        datapoints = await getDerivedDatapoints(
+          dimension, { context, startDate, endDate, timeScale }
         )
-        datapoints = _.map(datapointsGroups, (datapoints, dimension) => {
-          const [dimensionSlug, dimensionValue] = dimension.split(':')
-          return {
-            dimensionSlug,
-            dimensionValue,
-            scaledTime: 'sum',
-            count: _.sumBy(datapoints, 'count')
-          }
-        })
+      } else {
+        datapoints = await getDatapoints(
+          dimension, { context, startDate, endDate, timeScale }
+        )
       }
-      // else if (['day', 'week', 'month'].includes(timeScale)) {
-      //   const range = moment.range(
-      //     Time.dateToUTC(new Date(startDate)),
-      //     Time.dateToUTC(new Date(endDate))
-      //   )
-      //   const rangeArr = Array.from(range.by(timeScale))
-      //   const allDatapoints = _.map(rangeArr, (date) => ({
-      //     scaledTime: Time.getScaledTimeByTimeScale(timeScale, date),
-      //     count: 0
-      //   }))
-
-      //   datapoints = combineArraysByKey(allDatapoints, datapoints, 'scaledTime')
-      // }
-
-      console.log('dp', timeScale, datapoints)
 
       return GraphqlFormatter.fromScylla(datapoints)
     }
   }
 }
 
-async function getUpchieveMetrics ({ metricSlugs, startDate, endDate, timeScale = 'day' }) {
-  let metrics = await request(
-    `http://localhost:3000/metrics?minTime=${startDate}&maxTime=${endDate}&timeScale=${timeScale}&slugs=${metricSlugs.join(',')}`
-    , { json: true }
+async function getDatapoints (dimension, { context, startDate, endDate, timeScale }) {
+  const metric = dimension._metric
+  console.log(metric)
+  const datapoints = await datapointLoader(context).load(
+    [metric.id, dimension.id, startDate, endDate, timeScale].join(':')
   )
-  metrics = _.map(metrics, (metric) => {
-    metric.datapoints = _.map(metric.datapoints, (datapoint) => {
-      const dimensionSlug = metric.slug === 'student-zip-distribution'
-        ? 'state'
-        : datapoint.dimensionSlug || 'all'
-      const dimensionValue = metric.slug === 'student-zip-distribution'
-        ? ZipCodeData.stateFromZip(datapoint.dimensionValue)
-        : datapoint.dimensionValue || 'all'
-      return _.defaults({ dimensionSlug, dimensionValue }, datapoint)
-    })
-    return metric
-  })
 
-  return metrics
+  return sumDatapointsIfNecessary(dimension, datapoints)
 }
 
-// function combineArraysByKey (arr1, arr2, key) {
-//   arr1 = _.cloneDeep(arr1) // don't want to merge in place
-//   const obj2 = _.keyBy(arr2, key)
-//   return _.map(arr1, (value) => {
-//     return obj2[value[key]] || value
-//   })
-// }
+async function getDerivedDatapoints (dimension, { context, startDate, endDate, timeScale }) {
+  const metric = dimension._metric
+  const transforms = metric.transforms || []
+  const transformsWithDatapoints = await Promise.map(
+    transforms,
+    async ({ operation, metricId, dimensionId }) => {
+      dimensionId = dimensionId || dimension.id || cknex.emptyUuid
+      let datapoints = await datapointLoader(context).load(
+        [metricId, dimensionId, startDate, endDate, timeScale].join(':')
+      )
+      datapoints = sumDatapointsIfNecessary(dimension, datapoints)
+      return { operation, datapoints }
+    }
+  )
+  let datapoints = transformsWithDatapoints[0].datapoints
+  _.forEach(transformsWithDatapoints.splice(1), (transform) => {
+    const transformDatapointsByScaledTime = _.keyBy(transform.datapoints, (datapoint) =>
+      [datapoint.scaledTime, datapoint.dimensionValue].join(':')
+    )
+    datapoints = _.map(datapoints, (datapoint) => {
+      const key = [datapoint.scaledTime, datapoint.dimensionValue].join(':')
+      const transformDatapoint = transformDatapointsByScaledTime[key]
+
+      if (!transformDatapoint) {
+        return datapoint
+      }
+
+      switch (transform.operation) {
+        case '*':
+          datapoint.count *= transformDatapoint.count
+          break
+        case '/':
+          datapoint.count /= transformDatapoint.count
+          break
+      }
+      return datapoint
+    })
+  })
+  return datapoints
+}
+
+function sumDatapointsIfNecessary (dimension, datapoints) {
+  const metric = dimension._metric
+  const block = metric._block
+  if (['overview', 'bar', 'pie'].includes(block?.settings.type)) {
+    const datapointsGroups = _.groupBy(datapoints, ({ dimensionId, dimensionValue }) =>
+      [dimensionId, dimensionValue].join(':')
+    )
+    datapoints = _.map(datapointsGroups, (datapoints, dimension) => {
+      const [dimensionId, dimensionValue] = dimension.split(':')
+      return {
+        dimensionId,
+        dimensionValue,
+        scaledTime: 'sum',
+        count: _.sumBy(datapoints, 'count')
+      }
+    })
+  }
+
+  return datapoints
+}

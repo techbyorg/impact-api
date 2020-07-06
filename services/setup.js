@@ -5,6 +5,7 @@ import {
   cknex, elasticsearch, ElasticsearchSetup, JobRunner, ScyllaSetup, Cache, PubSub
 } from 'backend-shared'
 
+import cron from '../services/cron.js'
 import config from '../config.js'
 import { RUNNERS } from './job.js'
 
@@ -47,7 +48,7 @@ async function setup () {
   console.log('scylla & elasticsearch setup')
   cknex.enableErrors()
   JobRunner.listen(RUNNERS)
-  return null // don't block
+  cron.start()
 }
 
 function childSetup () {
