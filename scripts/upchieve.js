@@ -435,7 +435,8 @@ setup().then(() => {
       metricIds: [{ id: 'd8ebb7c0-bcc4-11ea-a21d-b27049928be6', dimensionIds: ['7d8ed360-bee2-11ea-90e4-414471c2de48'] }],
       dashboardId: 'fa5196d0-bb45-11ea-a380-7c3caf68c0ba',
       settings: {
-        type: 'line'
+        type: 'line',
+        isPrivate: true
       }
     },
     {
@@ -445,7 +446,8 @@ setup().then(() => {
       metricIds: [{ id: 'd8ebb7c0-bcc4-11ea-a21d-b27049928be6', dimensionIds: ['8cf0f770-bee2-11ea-a00e-3050789e3d8f'] }],
       dashboardId: 'fa5196d0-bb45-11ea-a380-7c3caf68c0ba',
       settings: {
-        type: 'line'
+        type: 'line',
+        isPrivate: true
       }
     },
     {

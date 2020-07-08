@@ -108,7 +108,7 @@ async function getDerivedDatapoints (dimension, { context, startDate, endDate, t
 function sumDatapointsIfNecessary (dimension, datapoints) {
   const metric = dimension._metric
   const block = metric._block
-  if (['overview', 'bar', 'pie'].includes(block?.settings.type)) {
+  if (['overview', 'bar', 'pie', 'us-map'].includes(block?.settings.type)) {
     const datapointsGroups = _.groupBy(datapoints, ({ dimensionId, dimensionValue }) =>
       [dimensionId, dimensionValue].join(':')
     )

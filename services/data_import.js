@@ -87,31 +87,36 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
 
 // importDatapoints({ startDate: '2020-06-06', endDate: '2020-06-06', timeScale: 'day', incrementAll: true })
 // single run import:
-Promise.each([
-  { startDate: '2018-01-01', endDate: '2020-07-06', timeScale: 'month' },
-  { startDate: '2018-01-01', endDate: '2020-07-06', timeScale: 'week' },
-  { startDate: '2018-01-01', endDate: '2020-07-06', timeScale: 'day' },
-  { startDate: '2018-01-01', endDate: '2020-07-06', timeScale: 'all' }
-], importDatapoints)
+// Promise.each([
+//   { startDate: '2018-01-01', endDate: '2020-07-07', timeScale: 'month' },
+//   { startDate: '2018-01-01', endDate: '2020-07-07', timeScale: 'week' },
+//   { startDate: '2018-01-01', endDate: '2020-07-07', timeScale: 'day' },
+//   { startDate: '2018-01-01', endDate: '2020-07-07', timeScale: 'all' }
+// ], importDatapoints)
 // FIXME: add separate step-based import that only grabs timeScale day for today, finds the diff
 // and updates all timeScales
 
 async function getUpchieveMetrics ({ startDate, endDate, timeScale = 'day' }) {
   console.log('upchieve req')
   let metrics = await request(
-    `http://localhost:3000/metrics?minTime=${startDate}&maxTime=${endDate}&timeScale=${timeScale}`
+    `https://app.upchieve.org/metrics?minTime=${startDate}&maxTime=${endDate}&timeScale=${timeScale}`
     , { json: true }
   )
   metrics = _.map(metrics, (metric) => {
-    metric.datapoints = _.map(metric.datapoints, (datapoint) => {
+    metric.datapoints = _.filter(_.map(metric.datapoints, (datapoint) => {
       const dimensionSlug = datapoint.dimensionSlug === 'zip'
         ? 'state'
         : datapoint.dimensionSlug || 'all'
-      const dimensionValue = datapoint.dimensionSlug === 'zip'
-        ? ZipCodeData.stateFromZip(datapoint.dimensionValue)
-        : datapoint.dimensionValue || 'all'
+      let dimensionValue = datapoint.dimensionValue || 'all'
+      if (datapoint.dimensionSlug === 'zip') {
+        try {
+          dimensionValue = ZipCodeData.stateFromZip(datapoint.dimensionValue)
+        } catch (err) {
+          return null
+        }
+      }
       return _.defaults({ dimensionSlug, dimensionValue }, datapoint)
-    })
+    }))
     return metric
   })
 

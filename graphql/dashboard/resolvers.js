@@ -10,7 +10,12 @@ export default {
     },
 
     dashboard: async (rootValue, { orgId, slug }) => {
-      return Dashboard.getByOrgIdAndSlug(orgId, slug)
+      if (slug) {
+        return Dashboard.getByOrgIdAndSlug(orgId, slug)
+      } else {
+        const dashboards = await Dashboard.getAllByOrgId(orgId)
+        return dashboards[0]
+      }
     }
   }
 }
