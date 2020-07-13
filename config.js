@@ -11,9 +11,10 @@ const {
 } = process
 
 const config = {
-  PORT: env.IMPACT_PORT || 3000,
+  PORT: env.IMPACT_API_PORT || 3000,
   ENV: env.DEBUG_ENV || env.NODE_ENV,
   MAX_CPU: env.IMPACT_API_MAX_CPU || 1,
+  RETENTION_DIMENSION_UUID: '1381670f-1dd2-11b2-7f7f-7f7f7f7f7f7f',
   REDIS: {
     PREFIX: 'impact_api',
     PUB_SUB_PREFIX: 'impact_api_pub_sub',

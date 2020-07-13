@@ -1,0 +1,3 @@
+- test everything needed for tech-by-impact lib
+  - incrementMetric (metricSlug, dimensionValues, count, { date, derivedDimensions, setTotal } = {})
+  - incrementUnique (metricSlug, hash, { date } = {}) {

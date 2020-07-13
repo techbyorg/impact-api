@@ -12,6 +12,8 @@ import { Base, cknex, Time } from 'backend-shared'
 const TIME_SCALES = ['all', 'year', 'month', 'week', 'day']
 
 class DatapointModel extends Base {
+  TIME_SCALES = TIME_SCALES
+
   getScyllaTables () {
     return [
       {
@@ -79,35 +81,34 @@ class DatapointModel extends Base {
       .map(this.defaultOutput)
   }
 
-  increment (datapoint, count) {
+  increment (datapoint, count = 1) {
     datapoint = _.omit(this.defaultInput(datapoint), 'count')
+
+    console.log('inc', datapoint)
+
+    let timeBucket = datapoint.timeBucket
+    if (!timeBucket) {
+      const time = Time.scaledTimeToUTC(datapoint.scaledTime)
+      const bucketTimeScale = this.getBucketTimeScaleByScaledTime(datapoint.scaledTime)
+      timeBucket = Time.getScaledTimeByTimeScale(bucketTimeScale, time)
+    }
 
     cknex().update('datapoints_counter')
       .increment('count', count)
       .where('metricId', '=', datapoint.metricId)
       .andWhere('dimensionId', '=', datapoint.dimensionId)
-      .andWhere('timeBucket', '=', datapoint.timeBucket)
+      .andWhere('timeBucket', '=', timeBucket)
       .andWhere('scaledTime', '=', datapoint.scaledTime)
       .andWhere('dimensionValue', '=', datapoint.dimensionValue)
       .run()
   }
 
   incrementAllTimeScales (datapoint, count) {
-    datapoint = _.omit(this.defaultInput(datapoint), 'count')
+    datapoint = _.omit(this.defaultInput(datapoint), ['count', 'timeBucket'])
+    const time = Time.scaledTimeToUTC(datapoint.scaledTime)
     Promise.map(TIME_SCALES, (timeScale) => {
-      const time = Time.scaledTimeToUTC(datapoint.scaledTime)
       const scaledTime = Time.getScaledTimeByTimeScale(timeScale, time)
-      const bucketTimeScale = this.getBucketTimeScaleByScaledTime(scaledTime)
-      const timeBucket = Time.getScaledTimeByTimeScale(bucketTimeScale, time)
-      console.log('up', scaledTime, timeBucket)
-      return cknex().update('datapoints_counter')
-        .increment('count', count)
-        .where('metricId', '=', datapoint.metricId)
-        .andWhere('dimensionId', '=', datapoint.dimensionId)
-        .andWhere('timeBucket', '=', timeBucket)
-        .andWhere('scaledTime', '=', scaledTime)
-        .andWhere('dimensionValue', '=', datapoint.dimensionValue)
-        .run()
+      this.increment(_.defaults({ scaledTime }, datapoint), count)
     })
   }
 

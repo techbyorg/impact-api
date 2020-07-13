@@ -1,6 +1,6 @@
 import { Base, cknex } from 'backend-shared'
 
-class BlockModel extends Base {
+class DashboardModel extends Base {
   getScyllaTables () {
     return [
       {
@@ -46,4 +46,4 @@ class BlockModel extends Base {
   }
 }
 
-export default new BlockModel()
+export default new DashboardModel()

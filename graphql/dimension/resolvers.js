@@ -23,6 +23,8 @@ export default {
         const blockDimensionIds = _.find(block.metricIds, { id: metric.id })?.dimensionIds
         if (!_.isEmpty(blockDimensionIds)) {
           dimensionIds = blockDimensionIds
+        } else {
+          dimensionIds = [cknex.emptyUuid]
         }
       }
 

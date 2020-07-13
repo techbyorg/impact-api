@@ -10,6 +10,10 @@ class DimensionModel extends Base {
           id: 'timeuuid',
           slug: 'text',
           name: 'text',
+          type: { type: 'text', defaultFn: () => 'standard' }, // standard | derived
+          // for derived metrics. datapoint dimensionValue derived at WRITE time
+          // from uniques
+          transforms: { type: 'json', defaultFn: () => [] },
           orgId: 'uuid'
         },
         primaryKey: {

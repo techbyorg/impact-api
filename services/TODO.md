@@ -1,1 +1,2 @@
 - organization timezones & scaledTime goes off of their timezone, not UTC!
+- if month / week is selected, select weeks/months at a time in calendar, since that's what the data actually shows

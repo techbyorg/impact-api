@@ -14,3 +14,18 @@ type DatapointConnection {
 extend type Dimension {
   datapoints(startDate: String, endDate: String, timeScale: String): DatapointConnection
 }
+
+extend type Mutation {
+  datapointIncrement(
+    metricSlug: String!
+    dimensionValues: JSONObject
+    setTotal: Boolean
+    count: Int!
+    date: Date
+  ): Boolean! @apiAuth
+  datapointIncrementUnique(
+    metricSlug: String!
+    hash: String!
+    date: Date
+  ): Boolean! @apiAuth
+}

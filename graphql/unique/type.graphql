@@ -1,0 +1,15 @@
+type Dashboard {
+  id: ID!
+  slug: String!
+  name: String
+}
+
+type DashboardConnection {
+  nodes: [Dashboard!]
+  totalCount: Int
+}
+
+extend type Query {
+  dashboards(orgId: String): DashboardConnection
+  dashboard(orgId: String, slug: String): Dashboard
+}
