@@ -61,7 +61,8 @@ class DatapointModel extends Base {
     }
   }
 
-  async getAllByMetricIdAndDimensionIdAndTimes (metricId, dimensionId, times) {
+  // empty string dimensionValue gets all dimensionValues
+  async getAllByMetricIdAndDimensionAndTimes (metricId, dimensionId, dimensionValue, times) {
     const { minScaledTime, maxScaledTime } = times
 
     const bucketTimeScale = this.getBucketTimeScaleByScaledTime(minScaledTime)
@@ -78,32 +79,45 @@ class DatapointModel extends Base {
         .run()
     })
       .then(_.flatten)
+      .then((datapoints) => {
+        if (dimensionValue) {
+          datapoints = _.filter(datapoints, { dimensionValue })
+        }
+        return datapoints
+      })
       .map(this.defaultOutput)
+  }
+
+  async get (metricId, dimensionId, dimensionValue, scaledTime) {
+    const bucketTimeScale = this.getBucketTimeScaleByScaledTime(scaledTime)
+    const time = Time.scaledTimeToUTC(scaledTime)
+    const timeBucket = Time.getScaledTimeByTimeScale(bucketTimeScale, time)
+
+    return cknex().select('*')
+      .from('datapoints_counter')
+      .where('metricId', '=', metricId)
+      .andWhere('dimensionId', '=', dimensionId)
+      .andWhere('dimensionValue', '=', dimensionValue)
+      .andWhere('timeBucket', '=', timeBucket)
+      .andWhere('scaledTime', '=', scaledTime)
+      .run({ isSingle: true })
+      .then(this.defaultOutput)
   }
 
   increment (datapoint, count = 1) {
     datapoint = _.omit(this.defaultInput(datapoint), 'count')
 
-    console.log('inc', datapoint)
-
-    let timeBucket = datapoint.timeBucket
-    if (!timeBucket) {
-      const time = Time.scaledTimeToUTC(datapoint.scaledTime)
-      const bucketTimeScale = this.getBucketTimeScaleByScaledTime(datapoint.scaledTime)
-      timeBucket = Time.getScaledTimeByTimeScale(bucketTimeScale, time)
-    }
-
     cknex().update('datapoints_counter')
       .increment('count', count)
       .where('metricId', '=', datapoint.metricId)
       .andWhere('dimensionId', '=', datapoint.dimensionId)
-      .andWhere('timeBucket', '=', timeBucket)
+      .andWhere('timeBucket', '=', datapoint.timeBucket)
       .andWhere('scaledTime', '=', datapoint.scaledTime)
       .andWhere('dimensionValue', '=', datapoint.dimensionValue)
       .run()
   }
 
-  incrementAllTimeScales (datapoint, count) {
+  incrementAllTimeScales (datapoint, count = 1) {
     datapoint = _.omit(this.defaultInput(datapoint), ['count', 'timeBucket'])
     const time = Time.scaledTimeToUTC(datapoint.scaledTime)
     Promise.map(TIME_SCALES, (timeScale) => {

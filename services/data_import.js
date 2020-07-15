@@ -55,8 +55,8 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
     })
     const dimensionIds = _.uniq(_.map(metricDatapoints, 'dimensionId'))
     const existingDatapoints = _.flatten(await Promise.map(dimensionIds, (dimensionId) => {
-      return Datapoint.getAllByMetricIdAndDimensionIdAndTimes(
-        metricId, dimensionId, {
+      return Datapoint.getAllByMetricIdAndDimensionAndTimes(
+        metricId, dimensionId, '', {
           minScaledTime: Time.getScaledTimeByTimeScale(timeScale, moment.utc(startDate)),
           maxScaledTime: Time.getScaledTimeByTimeScale(timeScale, moment.utc(endDate))
         }
@@ -88,10 +88,10 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
 // importDatapoints({ startDate: '2020-06-06', endDate: '2020-06-06', timeScale: 'day', incrementAll: true })
 // single run import:
 // Promise.each([
-//   { startDate: '2018-01-01', endDate: '2020-07-07', timeScale: 'month' },
-//   { startDate: '2018-01-01', endDate: '2020-07-07', timeScale: 'week' },
-//   { startDate: '2018-01-01', endDate: '2020-07-07', timeScale: 'day' },
-//   { startDate: '2018-01-01', endDate: '2020-07-07', timeScale: 'all' }
+//   { startDate: '2018-01-01', endDate: '2020-07-13', timeScale: 'month' },
+//   { startDate: '2018-01-01', endDate: '2020-07-13', timeScale: 'week' },
+//   { startDate: '2018-01-01', endDate: '2020-07-13', timeScale: 'day' },
+//   { startDate: '2018-01-01', endDate: '2020-07-13', timeScale: 'all' }
 // ], importDatapoints)
 // FIXME: add separate step-based import that only grabs timeScale day for today, finds the diff
 // and updates all timeScales
@@ -117,6 +117,16 @@ async function getUpchieveMetrics ({ startDate, endDate, timeScale = 'day' }) {
       }
       return _.defaults({ dimensionSlug, dimensionValue }, datapoint)
     }))
+
+    if (metric.slug === 'students') {
+      const datapointsByDimensionValue = _.groupBy(metric.datapoints, ({ dimensionId, dimensionValue }) =>
+        `${dimensionId}:${dimensionValue}`
+      )
+      metric.datapoints = _.map(datapointsByDimensionValue, (datapoints) => {
+        return _.defaults({ count: _.sumBy(datapoints, 'count') }, datapoints[0])
+      })
+    }
+
     return metric
   })
 
