@@ -97,7 +97,7 @@ export default {
   Mutation: {
     datapointIncrement: async (rootValue, options, context) => {
       const {
-        metricSlug, dimensionValues, date, setTotal, timeScale = 'day'
+        metricSlug, dimensionValues, date, isTotal, isSingleTimeScale, timeScale = 'day'
       } = options
       let { count } = options
 
@@ -108,11 +108,10 @@ export default {
         dimensionValues, { metricLoader, dimensionLoader }
       )
       const scaledTime = Time.getScaledTimeByTimeScale(timeScale, date)
-      console.log('inc', dimensions, setTotal)
-      // FIXME: "all dimension" should be treated differently for setTotal
+      // FIXME: "all dimension" should be treated differently for isTotal
       // eg { browser: 'chrome', os: 'linux' }
 
-      if (setTotal) {
+      if (isTotal) {
         // grab current values and adjust count accordingly
         // done for a single dimension so 'all' gets adjusted properly
         if (dimensions.length > 2) { // 2 because all is added in
@@ -131,7 +130,9 @@ export default {
           dimensionValue: dimension.value,
           scaledTime
         }
-        if (count) {
+        if (count && isSingleTimeScale) {
+          Datapoint.increment(datapoint, count)
+        } else if (count) {
           Datapoint.incrementAllTimeScales(datapoint, count)
         }
       })

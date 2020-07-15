@@ -59,7 +59,11 @@ export async function getDerivedDatapoints (dimension, { loader, startDate, endD
           datapoint.count *= transformDatapoint.count
           break
         case '/':
-          datapoint.count /= transformDatapoint.count
+          if (transformDatapoint.count) {
+            datapoint.count /= transformDatapoint.count
+          } else {
+            datapoint.count = 0
+          }
           break
       }
       return datapoint

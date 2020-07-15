@@ -19,7 +19,9 @@ extend type Mutation {
   datapointIncrement(
     metricSlug: String!
     dimensionValues: JSONObject
-    setTotal: Boolean
+    timeScale: String
+    isTotal: Boolean
+    isSingleTimeScale: Boolean
     count: Int!
     date: Date
   ): Boolean! @apiAuth

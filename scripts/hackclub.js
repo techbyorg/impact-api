@@ -38,13 +38,13 @@ setup().then(() => {
     {
       id: '0f97f9c0-c538-11ea-818b-11ca16a96b20',
       slug: 'users',
-      name: 'Users',
+      name: 'New users',
       orgId: ORG_ID
     },
     {
       id: '10b5ece0-c538-11ea-8de2-e2ca06c46436',
       slug: 'members',
-      name: 'Members',
+      name: 'New members',
       orgId: ORG_ID
     },
     {
@@ -207,7 +207,7 @@ setup().then(() => {
     {
       id: 'a8edab10-c538-11ea-b52f-249a6d1988bb',
       slug: 'users',
-      name: 'New users',
+      name: 'New users (members + guests)',
       metricIds: [{ id: '0f97f9c0-c538-11ea-818b-11ca16a96b20' }],
       dashboardId: 'd9031d80-c3ad-11ea-bac1-bc3c2083c245',
       settings: {
@@ -241,7 +241,7 @@ setup().then(() => {
       metricIds: [{ id: '38ea0600-c5f2-11ea-82d8-495003cfeb04' }],
       dashboardId: 'd9031d80-c3ad-11ea-bac1-bc3c2083c245',
       settings: {
-        type: 'line'
+        type: 'line', isPrivate: true
       }
     },
     {
@@ -254,7 +254,20 @@ setup().then(() => {
       }],
       dashboardId: 'd9031d80-c3ad-11ea-bac1-bc3c2083c245',
       settings: {
-        type: 'pie'
+        type: 'pie', isPrivate: true
+      }
+    },
+    {
+      id: '6de01380-c6c5-11ea-9eed-2515329376ba',
+      slug: 'slack-overview',
+      name: 'Overview',
+      metricIds: [
+        { id: '0f97f9c0-c538-11ea-818b-11ca16a96b20' },
+        { id: '86a70f90-c3af-11ea-adb1-8ca034704bbf' }
+      ],
+      dashboardId: 'd9031d80-c3ad-11ea-bac1-bc3c2083c245',
+      settings: {
+        type: 'overview', isPinned: true
       }
     },
     // {
