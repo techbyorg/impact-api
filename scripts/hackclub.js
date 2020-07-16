@@ -269,7 +269,7 @@ setup().then(() => {
       settings: {
         type: 'overview', isPinned: true
       }
-    },
+    }
     // {
     //   id: '02d7ed40-c537-11ea-b233-93ba5f7083a1',
     //   slug: 'messages-by-new-old-user',

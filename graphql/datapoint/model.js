@@ -12,7 +12,11 @@ import { Base, cknex, Time } from 'backend-shared'
 const TIME_SCALES = ['all', 'year', 'month', 'week', 'day']
 
 class DatapointModel extends Base {
-  TIME_SCALES = TIME_SCALES
+  constructor () {
+    super()
+
+    this.TIME_SCALES = TIME_SCALES
+  }
 
   getScyllaTables () {
     return [
