@@ -93,13 +93,13 @@ export default {
     }
   },
 
-  // FIXME: DRY
   Mutation: {
     datapointIncrement: async (rootValue, options, context) => {
       const {
         metricSlug, dimensionValues, date, isTotal, isSingleTimeScale, timeScale = 'day'
       } = options
       let { count } = options
+      console.log('increment', metricSlug)
 
       const metricLoader = await metricLoaderFn(context)
       const dimensionLoader = await dimensionLoaderFn(context)

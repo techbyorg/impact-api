@@ -14,6 +14,7 @@ const config = {
   PORT: env.IMPACT_API_PORT || 3000,
   ENV: env.DEBUG_ENV || env.NODE_ENV,
   MAX_CPU: env.IMPACT_API_MAX_CPU || 1,
+  PHIL_HTTP_API_URL: env.PHIL_HTTP_API_URL,
   RETENTION_DIMENSION_UUID: '1381670f-1dd2-11b2-7f7f-7f7f7f7f7f7f',
   REDIS: {
     PREFIX: 'impact_api',

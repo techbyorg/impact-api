@@ -247,7 +247,13 @@ setup().then(() => {
     {
       id: '78d28e60-bee3-11ea-aef6-04f7769e2c92',
       slug: 'state',
-      orgId: ORG_ID
+      orgId: ORG_ID,
+      type: 'derived',
+      transforms: [
+        {
+          operation: 'stateFromZip'
+        }
+      ]
     }
   ]
 

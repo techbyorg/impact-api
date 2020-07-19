@@ -9,10 +9,11 @@ import GraphQLTools from 'graphql-tools'
 import fs from 'fs'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
-import { Schema } from 'backend-shared'
+import { getApiKey, Schema } from 'backend-shared'
 
 import * as directives from './graphql/directives.js'
 import { setup, childSetup } from './services/setup.js'
+import config from './config.js'
 
 const { ApolloServer } = ApolloServerExpress
 const { buildFederatedSchema } = ApolloFederation
@@ -43,8 +44,16 @@ const serverPromise = schemaPromise.then((schema) => {
 
   const graphqlServer = new ApolloServer({
     schema,
-    context: ({ req }) => {
-      return { org: { id: 'c98708d0-c3ad-11ea-a25b-49d5a57b8b87' } } // FIXME
+    context: async ({ req }) => {
+      let org, apiKey
+      if (req.headers.authorization) {
+        console.log('check auth')
+        const apiKeyStr = req.headers.authorization.replace('Bearer ', '')
+        console.log('api', apiKeyStr)
+        const apiKey = await getApiKey(apiKeyStr, config.PHIL_HTTP_API_URL)
+        org = apiKey && { id: apiKey.orgId }
+      }
+      return { org, apiKey }
     }
   })
   graphqlServer.applyMiddleware({ app, path: '/graphql' })

@@ -137,6 +137,9 @@ async function getDerivedDimensionValue ({ transforms }, { hash }, { metricLoade
       case 'stringify':
         value = `${value}`
         break
+      case 'stateFromZip': // FIXME: don't use base metricId
+        value = `${value}`
+        break
     }
   })
   return value
