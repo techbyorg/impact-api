@@ -32,6 +32,8 @@ class DatapointModel extends Base {
           count: 'counter'
         },
         primaryKey: {
+          // TODO: we could technically also add a timeScale field and partition on that too
+          // so metrics by week & month aren't lumped into same partition
           partitionKey: ['metricId', 'dimensionId', 'timeBucket'],
           clusteringColumns: ['scaledTime', 'dimensionValue']
         },

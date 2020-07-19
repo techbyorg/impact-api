@@ -47,9 +47,7 @@ const serverPromise = schemaPromise.then((schema) => {
     context: async ({ req }) => {
       let org, apiKey
       if (req.headers.authorization) {
-        console.log('check auth')
         const apiKeyStr = req.headers.authorization.replace('Bearer ', '')
-        console.log('api', apiKeyStr)
         const apiKey = await getApiKey(apiKeyStr, config.PHIL_HTTP_API_URL)
         org = apiKey && { id: apiKey.orgId }
       }

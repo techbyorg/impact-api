@@ -2,7 +2,7 @@ import _ from 'lodash'
 import Promise from 'bluebird'
 import moment from 'moment'
 import crypto from 'crypto'
-import { GraphqlFormatter, Loader, Time } from 'backend-shared'
+import { GraphqlFormatter, Loader, Time, Cache } from 'backend-shared'
 
 import Datapoint from './model.js'
 import Dimension from '../dimension/model.js'
@@ -11,6 +11,7 @@ import Unique from '../unique/model.js'
 import {
   getDatapoints, getDerivedDatapoints, getDimensions, adjustCountForTotal
 } from '../../services/datapoint.js'
+import LOCK_PREFIXES from '../../services/cache.js'
 import config from '../../config.js'
 
 const RETENTION_TYPES = [
@@ -19,6 +20,7 @@ const RETENTION_TYPES = [
   { scale: 'month', prefix: 'm', max: 12 },
   { scale: 'year', prefix: 'm', max: 12 }
 ]
+const INCREMENT_UNIQUE_LOCK_EXPIRE_SECONDS = 5
 
 // TODO: write tests
 // TODO: log all database operations and see if loaders are setup properly
@@ -150,42 +152,48 @@ export default {
 }
 
 async function incrementUnique ({ metricSlug, dimensionId, dimensionValue, hash, date, org }) {
-  console.log('inc')
-  const metric = await Metric.getByOrgIdAndSlug(org.id, metricSlug)
-  const scaledTimes = Time.getScaledTimesByTimeScales(Datapoint.TIME_SCALES, date)
-  const uniques = await Unique.getAll({
-    metricId: metric.id, dimensionId, dimensionValue, hash, scaledTimes
-  })
-  const allUnique = _.find(uniques, { scaledTime: 'ALL' })
-  // track retention for any unique metric. retention is hour-based not calendar-day based.
-  // eg. d1 is for 24-48 hours after first visit.
-  if (dimensionId !== config.RETENTION_DIMENSION_UUID) {
-    await Promise.map(RETENTION_TYPES, async ({ scale, prefix, max }) => {
-      // we still want to track d0/w0/m0/y0 so we can divide by that to get retention
-      // moment.diff truncates (Math.floor), not round, which is what we want
-      const countSinceAllUnique = allUnique
-        ? moment(date).diff(allUnique.addTime, scale)
-        : 0
-      if (countSinceAllUnique <= max) {
-        return incrementUnique({
-          metricSlug,
-          dimensionId: config.RETENTION_DIMENSION_UUID,
-          dimensionValue: `${prefix}${countSinceAllUnique}`,
-          hash,
-          date,
-          org
-        })
-      }
+  const cachePrefix = LOCK_PREFIXES.DATAPOINT_INCREMENT_UNIQUE
+  const cacheKey = `${cachePrefix}:${metricSlug}:${dimensionId}:${dimensionValue}:${hash}`
+  // not atomic due to unique lookups, so we lock during call
+  Cache.lock(cacheKey, async () => {
+    // console.log('inc unique', metricSlug, hash)
+    const metric = await Metric.getByOrgIdAndSlug(org.id, metricSlug)
+    const scaledTimes = Time.getScaledTimesByTimeScales(Datapoint.TIME_SCALES, date)
+    const uniques = await Unique.getAll({
+      metricId: metric.id, dimensionId, dimensionValue, hash, scaledTimes
     })
-  }
-  const existingScaledTimes = _.map(uniques, 'scaledTime')
-  const missingScaledTimes = _.difference(scaledTimes, existingScaledTimes)
-  await Promise.map(missingScaledTimes, (scaledTime) => {
-    return Promise.all([
-      Unique.upsert({
-        metricId: metric.id, dimensionId, dimensionValue, hash, scaledTime, addTime: date
-      }),
-      Datapoint.increment({ metricId: metric.id, dimensionId, dimensionValue, scaledTime })
-    ])
-  })
+    const allUnique = _.find(uniques, { scaledTime: 'ALL' })
+    // track retention for any unique metric. retention is hour-based not calendar-day based.
+    // eg. d1 is for 24-48 hours after first visit.
+    if (dimensionId !== config.RETENTION_DIMENSION_UUID) {
+      await Promise.map(RETENTION_TYPES, async ({ scale, prefix, max }) => {
+        // we still want to track d0/w0/m0/y0 so we can divide by that to get retention
+        // moment.diff truncates (Math.floor), not round, which is what we want
+        const countSinceAllUnique = allUnique
+          ? moment(date).diff(allUnique.addTime, scale)
+          : 0
+        if (countSinceAllUnique <= max) {
+          return incrementUnique({
+            metricSlug,
+            dimensionId: config.RETENTION_DIMENSION_UUID,
+            dimensionValue: `${prefix}${countSinceAllUnique}`,
+            hash,
+            date,
+            org
+          })
+        }
+      })
+    }
+    const existingScaledTimes = _.map(uniques, 'scaledTime')
+    const missingScaledTimes = _.difference(scaledTimes, existingScaledTimes)
+    await Promise.map(missingScaledTimes, (scaledTime) => {
+      return Promise.all([
+        Unique.upsert({
+          metricId: metric.id, dimensionId, dimensionValue, hash, scaledTime, addTime: date
+        }),
+        Datapoint.increment({ metricId: metric.id, dimensionId, dimensionValue, scaledTime })
+      ])
+    })
+    return true
+  }, { expireSeconds: INCREMENT_UNIQUE_LOCK_EXPIRE_SECONDS, unlockWhenCompleted: true })
 }
