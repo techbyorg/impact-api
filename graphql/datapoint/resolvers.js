@@ -45,7 +45,7 @@ const datapointLoaderFn = Loader.withContext(async (options, context) => {
 
   return Promise.map(options, ({ metricId, dimensionId, dimensionValue }) => {
     return Datapoint.getAllByMetricIdAndDimensionAndTimes(metricId, dimensionId, dimensionValue, {
-      minScaledTime, maxScaledTime
+      timeScale, minScaledTime, maxScaledTime
     })
   }
   )
@@ -101,7 +101,7 @@ export default {
         metricSlug, dimensionValues, date, isTotal, isSingleTimeScale, timeScale = 'day'
       } = options
       let { count } = options
-      console.log('increment', metricSlug)
+      console.log('increment', metricSlug, isTotal)
 
       const metricLoader = await metricLoaderFn(context)
       const dimensionLoader = await dimensionLoaderFn(context)
@@ -120,9 +120,8 @@ export default {
           throw new Error('Can only set total for 1 dimension at a time')
         }
         count = await adjustCountForTotal({
-          count, scaledTime, metric, dimension: dimensions[0]
+          count, metric, dimension: dimensions[0], timeScale, scaledTime
         })
-        console.log('dp', count)
       }
 
       await Promise.map(dimensions, async (dimension) => {
@@ -130,6 +129,7 @@ export default {
           metricId: metric.id,
           dimensionId: dimension.id,
           dimensionValue: dimension.value,
+          timeScale,
           scaledTime
         }
         if (count && isSingleTimeScale) {
@@ -142,6 +142,7 @@ export default {
     },
 
     datapointIncrementUnique: async (rootValue, { metricSlug, hash, date }, { org }) => {
+      console.log('inc uniq')
       const potentiallyHashed = hash
       // clients should be hashing, but we'll hash just in case they don't
       hash = crypto.createHash('sha256').update(potentiallyHashed).digest('base64')
@@ -159,10 +160,11 @@ async function incrementUnique ({ metricSlug, dimensionId, dimensionValue, hash,
     // console.log('inc unique', metricSlug, hash)
     const metric = await Metric.getByOrgIdAndSlug(org.id, metricSlug)
     const scaledTimes = Time.getScaledTimesByTimeScales(Datapoint.TIME_SCALES, date)
+    const timeScalesByScaledTime = _.zipObject(scaledTimes, Datapoint.TIME_SCALES)
     const uniques = await Unique.getAll({
       metricId: metric.id, dimensionId, dimensionValue, hash, scaledTimes
     })
-    const allUnique = _.find(uniques, { scaledTime: 'ALL' })
+    const allUnique = _.find(uniques, { scaledTime: 'ALL:ALL' })
     // track retention for any unique metric. retention is hour-based not calendar-day based.
     // eg. d1 is for 24-48 hours after first visit.
     if (dimensionId !== config.RETENTION_DIMENSION_UUID) {
@@ -187,11 +189,12 @@ async function incrementUnique ({ metricSlug, dimensionId, dimensionValue, hash,
     const existingScaledTimes = _.map(uniques, 'scaledTime')
     const missingScaledTimes = _.difference(scaledTimes, existingScaledTimes)
     await Promise.map(missingScaledTimes, (scaledTime) => {
+      const timeScale = timeScalesByScaledTime[scaledTime]
       return Promise.all([
         Unique.upsert({
           metricId: metric.id, dimensionId, dimensionValue, hash, scaledTime, addTime: date
         }),
-        Datapoint.increment({ metricId: metric.id, dimensionId, dimensionValue, scaledTime })
+        Datapoint.increment({ metricId: metric.id, dimensionId, dimensionValue, timeScale, scaledTime })
       ])
     })
     return true

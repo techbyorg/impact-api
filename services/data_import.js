@@ -34,6 +34,25 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
     const metric = await metricLoader(context).load(slug)
     const metricId = metric.id
     const metricDatapoints = await Promise.map(datapoints, async (datapoint) => {
+      // legacy fix
+      if (datapoint.scaledTime === 'ALL') { datapoint.scaledTime = 'ALL:ALL' }
+
+      // legacy fix
+      const timeScalePrefix = datapoint.scaledTime.match(/([A-Z]+):/)[1]
+      const timeScale = timeScalePrefix === 'All'
+        ? 'all'
+        : timeScalePrefix === 'DAY'
+          ? 'day'
+          : timeScalePrefix === 'BIWK'
+            ? 'biweek'
+            : timeScalePrefix === 'WK'
+              ? 'week'
+              : timeScalePrefix === 'MON'
+                ? 'month'
+                : timeScalePrefix === 'YR'
+                  ? 'year'
+                  : 'minute'
+
       let dimensionId
       if (datapoint.dimensionSlug === 'all') {
         dimensionId = cknex.emptyUuid
@@ -48,6 +67,7 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
       return {
         metricId,
         dimensionId,
+        timeScale,
         dimensionValue: datapoint.dimensionValue || 'all',
         scaledTime: datapoint.scaledTime,
         count: datapoint.count
@@ -57,6 +77,7 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
     const existingDatapoints = _.flatten(await Promise.map(dimensionIds, (dimensionId) => {
       return Datapoint.getAllByMetricIdAndDimensionAndTimes(
         metricId, dimensionId, '', {
+          timeScale,
           minScaledTime: Time.getScaledTimeByTimeScale(timeScale, moment.utc(startDate)),
           maxScaledTime: Time.getScaledTimeByTimeScale(timeScale, moment.utc(endDate))
         }
@@ -85,16 +106,15 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
   ).tap(() => { console.log('done') })
 }
 
-// importDatapoints({ startDate: '2020-06-06', endDate: '2020-06-06', timeScale: 'day', incrementAll: true })
+// importDatapoints({ startDate: '2020-07-18', endDate: '2020-07-18', timeScale: 'day', incrementAll: true })
+// importDatapoints({ startDate: '2020-07-10', endDate: '2020-07-18', timeScale: 'day' })
 // single run import:
 // Promise.each([
-//   { startDate: '2018-01-01', endDate: '2020-07-13', timeScale: 'month' },
-//   { startDate: '2018-01-01', endDate: '2020-07-13', timeScale: 'week' },
-//   { startDate: '2018-01-01', endDate: '2020-07-13', timeScale: 'day' },
-//   { startDate: '2018-01-01', endDate: '2020-07-13', timeScale: 'all' }
+//   { startDate: '2018-01-01', endDate: '2020-07-19', timeScale: 'month' },
+//   { startDate: '2018-01-01', endDate: '2020-07-19', timeScale: 'week' },
+//   { startDate: '2018-01-01', endDate: '2020-07-19', timeScale: 'day' },
+//   { startDate: '2018-01-01', endDate: '2020-07-19', timeScale: 'all' }
 // ], importDatapoints)
-// FIXME: add separate step-based import that only grabs timeScale day for today, finds the diff
-// and updates all timeScales
 
 async function getUpchieveMetrics ({ startDate, endDate, timeScale = 'day' }) {
   console.log('upchieve req')
@@ -119,8 +139,8 @@ async function getUpchieveMetrics ({ startDate, endDate, timeScale = 'day' }) {
     }))
 
     if (metric.slug === 'students') {
-      const datapointsByDimensionValue = _.groupBy(metric.datapoints, ({ dimensionId, dimensionValue }) =>
-        `${dimensionId}:${dimensionValue}`
+      const datapointsByDimensionValue = _.groupBy(metric.datapoints, ({ scaledTime, dimensionId, dimensionValue }) =>
+        `${scaledTime}:${dimensionId}:${dimensionValue}`
       )
       metric.datapoints = _.map(datapointsByDimensionValue, (datapoints) => {
         return _.defaults({ count: _.sumBy(datapoints, 'count') }, datapoints[0])

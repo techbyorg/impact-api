@@ -10,7 +10,6 @@ import Unique from '../graphql/unique/model.js'
 
 export async function getDatapoints (dimension, { loader, startDate, endDate, timeScale }) {
   const metric = dimension._metric
-  console.log('get', [metric.id, dimension.id, '', startDate, endDate, timeScale].join(':'))
   const datapoints = await loader.load(
     [metric.id, dimension.id, '', startDate, endDate, timeScale].join(':')
   )
@@ -120,7 +119,7 @@ async function getDerivedDimensionValue ({ transforms }, { hash }, { metricLoade
         dimensionId: transform.dimensionId,
         dimensionValue: transform.dimensionValue,
         hash,
-        scaledTime: 'ALL'
+        scaledTime: 'ALL:ALL'
       })
       return _.defaults({ value: unique }, transform)
     }
@@ -145,8 +144,8 @@ async function getDerivedDimensionValue ({ transforms }, { hash }, { metricLoade
   return value
 }
 
-export async function adjustCountForTotal ({ count, scaledTime, metric, dimension }) {
-  const currentDatapoint = await Datapoint.get(metric.id, dimension.id, dimension.value, scaledTime)
+export async function adjustCountForTotal ({ count, metric, dimension, timeScale, scaledTime }) {
+  const currentDatapoint = await Datapoint.get(metric.id, dimension.id, dimension.value, timeScale, scaledTime)
   if (currentDatapoint) {
     console.log('adjust', 'set', count, 'current', dimension.id, dimension.value, currentDatapoint.count)
     count = count - currentDatapoint.count

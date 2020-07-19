@@ -8,7 +8,7 @@ class CronService extends Cron {
   constructor () {
     super()
 
-    // hourly (at 5 min 30s every hour)
+    // hourly (at 16 min 30s every hour)
     this.addCron('hour', '30 16 * * * *', () => {
       console.log('cron')
       if (config.ENV === config.ENVS.PROD) {
