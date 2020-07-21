@@ -1,7 +1,7 @@
 
 import _ from 'lodash'
 import crypto from 'crypto'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import Promise from 'bluebird'
 import { cknex } from 'backend-shared'
 

@@ -2,7 +2,7 @@ import _ from 'lodash'
 import request from 'request-promise'
 import ZipCodeData from 'zipcode-data'
 import Promise from 'bluebird'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import { Loader, Time, cknex } from 'backend-shared'
 
 import Datapoint from '../graphql/datapoint/model.js'

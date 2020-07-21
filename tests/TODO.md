@@ -1,3 +1,4 @@
 - test everything needed for tech-by-impact lib
   - incrementMetric (metricSlug, dimensionValues, count, { date, derivedDimensions, isTotal } = {})
   - incrementUnique (metricSlug, hash, { date } = {}) {
+  - tests w/ different timezones & making sure scaledTime is correct

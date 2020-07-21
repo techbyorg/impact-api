@@ -1,4 +1,4 @@
-import moment from 'moment'
+import moment from 'moment-timezone'
 import { Cron } from 'backend-shared'
 
 import config from '../config.js'

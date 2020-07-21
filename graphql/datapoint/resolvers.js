@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import Promise from 'bluebird'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import crypto from 'crypto'
 import { GraphqlFormatter, Loader, Time, Cache } from 'backend-shared'
 
@@ -18,7 +18,7 @@ const RETENTION_TYPES = [
   { scale: 'day', prefix: 'd', max: 7 },
   { scale: 'week', prefix: 'w', max: 12 },
   { scale: 'month', prefix: 'm', max: 12 },
-  { scale: 'year', prefix: 'm', max: 12 }
+  { scale: 'year', prefix: 'y', max: 12 }
 ]
 const INCREMENT_UNIQUE_LOCK_EXPIRE_SECONDS = 5
 
@@ -101,7 +101,7 @@ export default {
         metricSlug, dimensionValues, date, isTotal, isSingleTimeScale, timeScale = 'day'
       } = options
       let { count } = options
-      console.log('increment', metricSlug, isTotal)
+      const { org } = context
 
       const metricLoader = await metricLoaderFn(context)
       const dimensionLoader = await dimensionLoaderFn(context)
@@ -109,7 +109,9 @@ export default {
       const dimensions = await getDimensions(
         dimensionValues, { metricLoader, dimensionLoader }
       )
-      const scaledTime = Time.getScaledTimeByTimeScale(timeScale, date)
+      const scaledTime = Time.getScaledTimeByTimeScale(timeScale, date, org.timezone)
+
+      console.log('increment', metricSlug, isTotal, scaledTime)
       // FIXME: "all dimension" should be treated differently for isTotal
       // eg { browser: 'chrome', os: 'linux' }
 
@@ -132,6 +134,7 @@ export default {
           timeScale,
           scaledTime
         }
+
         if (count && isSingleTimeScale) {
           Datapoint.increment(datapoint, count)
         } else if (count) {
@@ -142,7 +145,7 @@ export default {
     },
 
     datapointIncrementUnique: async (rootValue, { metricSlug, hash, date }, { org }) => {
-      console.log('inc uniq')
+      console.log('inc uniq', org)
       const potentiallyHashed = hash
       // clients should be hashing, but we'll hash just in case they don't
       hash = crypto.createHash('sha256').update(potentiallyHashed).digest('base64')
@@ -159,7 +162,7 @@ async function incrementUnique ({ metricSlug, dimensionId, dimensionValue, hash,
   Cache.lock(cacheKey, async () => {
     // console.log('inc unique', metricSlug, hash)
     const metric = await Metric.getByOrgIdAndSlug(org.id, metricSlug)
-    const scaledTimes = Time.getScaledTimesByTimeScales(Datapoint.TIME_SCALES, date)
+    const scaledTimes = Time.getScaledTimesByTimeScales(Datapoint.TIME_SCALES, date, org.timezone)
     const timeScalesByScaledTime = _.zipObject(scaledTimes, Datapoint.TIME_SCALES)
     const uniques = await Unique.getAll({
       metricId: metric.id, dimensionId, dimensionValue, hash, scaledTimes
@@ -172,7 +175,7 @@ async function incrementUnique ({ metricSlug, dimensionId, dimensionValue, hash,
         // we still want to track d0/w0/m0/y0 so we can divide by that to get retention
         // moment.diff truncates (Math.floor), not round, which is what we want
         const countSinceAllUnique = allUnique
-          ? moment(date).diff(allUnique.addTime, scale)
+          ? moment(date || new Date()).diff(allUnique.addTime, scale)
           : 0
         if (countSinceAllUnique <= max) {
           return incrementUnique({
@@ -180,7 +183,8 @@ async function incrementUnique ({ metricSlug, dimensionId, dimensionValue, hash,
             dimensionId: config.RETENTION_DIMENSION_UUID,
             dimensionValue: `${prefix}${countSinceAllUnique}`,
             hash,
-            date,
+            // eg if today is 1/8 and addTime was 1/1, it's D7 for 1/1
+            date: allUnique.addTime,
             org
           })
         }
@@ -190,6 +194,7 @@ async function incrementUnique ({ metricSlug, dimensionId, dimensionValue, hash,
     const missingScaledTimes = _.difference(scaledTimes, existingScaledTimes)
     await Promise.map(missingScaledTimes, (scaledTime) => {
       const timeScale = timeScalesByScaledTime[scaledTime]
+      console.log('inc uniq', metricSlug, dimensionValue, scaledTime)
       return Promise.all([
         Unique.upsert({
           metricId: metric.id, dimensionId, dimensionValue, hash, scaledTime, addTime: date
