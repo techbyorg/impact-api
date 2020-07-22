@@ -184,7 +184,7 @@ async function incrementUnique ({ metricSlug, dimensionId, dimensionValue, hash,
             dimensionValue: `${prefix}${countSinceAllUnique}`,
             hash,
             // eg if today is 1/8 and addTime was 1/1, it's D7 for 1/1
-            date: allUnique.addTime,
+            date: allUnique?.addTime,
             org
           })
         }
