@@ -9,7 +9,8 @@ import Dimension from '../dimension/model.js'
 import Metric from '../metric/model.js'
 import Unique from '../unique/model.js'
 import {
-  getDatapoints, getDerivedDatapoints, getDimensions, adjustCountForTotal
+  getDatapoints, getDerivedDatapoints, getDimensions, adjustCountForTotal,
+  addZeroes
 } from '../../services/datapoint.js'
 import LOCK_PREFIXES from '../../services/cache.js'
 import config from '../../config.js'
@@ -89,6 +90,10 @@ export default {
         datapoints = await getDatapoints(
           dimension, { loader, startDate, endDate, timeScale }
         )
+      }
+
+      if (block?.settings.type === 'line') {
+        datapoints = addZeroes(datapoints, { dimension, startDate, endDate, timeScale })
       }
 
       return GraphqlFormatter.fromScylla(datapoints)

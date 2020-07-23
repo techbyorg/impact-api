@@ -1,12 +1,16 @@
 
 import _ from 'lodash'
 import crypto from 'crypto'
-import moment from 'moment-timezone'
+import Moment from 'moment-timezone'
+import momentRange from 'moment-range'
 import Promise from 'bluebird'
-import { cknex } from 'backend-shared'
+import { cknex, Time } from 'backend-shared'
 
 import Datapoint from '../graphql/datapoint/model.js'
 import Unique from '../graphql/unique/model.js'
+
+const { extendMoment } = momentRange
+const moment = extendMoment(Moment)
 
 export async function getDatapoints (dimension, { loader, startDate, endDate, timeScale }) {
   const metric = dimension._metric
@@ -151,4 +155,22 @@ export async function adjustCountForTotal ({ count, metric, dimension, timeScale
     count = count - currentDatapoint.count
   }
   return count
+}
+
+export function addZeroes (datapoints, { dimension, startDate, endDate, timeScale }) {
+  const metric = dimension._metric
+
+  const range = moment.range(startDate, endDate)
+  const rangeArr = Array.from(range.by(timeScale))
+  const allDatapoints = _.map(rangeArr, (date) => ({
+    metricId: metric.id,
+    dimensionId: dimension.id,
+    dimensionValue: datapoints[0]?.dimensionValue || 'all',
+    scaledTime: Time.getScaledTimeByTimeScale(timeScale, date),
+    count: 0
+  }))
+  const datapointsWithZeroes = _.unionBy(datapoints, allDatapoints, (datapoint) => (
+    [datapoint.scaledTime, datapoint.dimensionValue].join('|')
+  ))
+  return _.orderBy(datapointsWithZeroes, 'scaledTime', 'asc')
 }

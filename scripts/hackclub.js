@@ -17,7 +17,15 @@ setup().then(() => {
       id: 'd9031d80-c3ad-11ea-bac1-bc3c2083c245',
       slug: 'slack',
       name: 'Slack',
-      orgId: ORG_ID
+      orgId: ORG_ID,
+      displayOrder: 0
+    },
+    {
+      id: 'a3b5e980-cd05-11ea-b659-17b08b2e99a3',
+      slug: 'bank',
+      name: 'Bank',
+      orgId: ORG_ID,
+      displayOrder: 1
     }
   ]
 
@@ -103,7 +111,29 @@ setup().then(() => {
           dimensionValue: 'w0'
         }
       ]
-    }
+    },
+
+    // Bank
+    {
+      id: '0a7f65b0-cd15-11ea-8759-abd500e43807',
+      slug: 'bank-transactions',
+      name: 'Transactions',
+      orgId: ORG_ID
+    },
+    {
+      id: '24c2b990-cd15-11ea-acff-8432fbc30946',
+      slug: 'bank-transactions-volume',
+      name: 'Transaction volume',
+      orgId: ORG_ID,
+      unit: 'cents'
+    },
+    {
+      id: '296cb9a0-cd15-11ea-b0d4-f523bff0dad7',
+      slug: 'bank-raised',
+      name: 'Money raised',
+      orgId: ORG_ID,
+      unit: 'cents'
+    },
   ]
 
   const dimensions = [
@@ -269,7 +299,7 @@ setup().then(() => {
       settings: {
         type: 'overview', isPinned: true
       }
-    }
+    },
     // {
     //   id: '02d7ed40-c537-11ea-b233-93ba5f7083a1',
     //   slug: 'messages-by-new-old-user',
@@ -280,6 +310,38 @@ setup().then(() => {
     //     type: 'line'
     //   }
     // }
+
+    // Bank
+    {
+      id: '5c8ad0b0-cd15-11ea-92f2-4544eddaa1b1',
+      slug: 'bank-transactions',
+      name: 'Transactions',
+      metricIds: [{ id: '0a7f65b0-cd15-11ea-8759-abd500e43807' }],
+      dashboardId: 'a3b5e980-cd05-11ea-b659-17b08b2e99a3',
+      settings: {
+        type: 'line'
+      }
+    },
+    {
+      id: '6579f480-cd15-11ea-b575-6d6b1e77276a',
+      slug: 'bank-transactions-volume',
+      name: 'Transaction volume',
+      metricIds: [{ id: '24c2b990-cd15-11ea-acff-8432fbc30946' }],
+      dashboardId: 'a3b5e980-cd05-11ea-b659-17b08b2e99a3',
+      settings: {
+        type: 'line'
+      }
+    },
+    {
+      id: '6ae8cb30-cd15-11ea-a408-26a0e8226ec6',
+      slug: 'bank-raised',
+      name: 'Money raised',
+      metricIds: [{ id: '296cb9a0-cd15-11ea-b0d4-f523bff0dad7' }],
+      dashboardId: 'a3b5e980-cd05-11ea-b659-17b08b2e99a3',
+      settings: {
+        type: 'line'
+      }
+    }
   ]
 
   Promise.all([

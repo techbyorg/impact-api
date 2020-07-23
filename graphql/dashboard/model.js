@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { Base, cknex } from 'backend-shared'
 
 class DashboardModel extends Base {
@@ -10,7 +11,8 @@ class DashboardModel extends Base {
           id: 'timeuuid',
           slug: 'text',
           name: 'text',
-          orgId: 'uuid'
+          orgId: 'uuid',
+          displayOrder: 'int'
         },
         primaryKey: {
           partitionKey: ['id'],
@@ -28,12 +30,15 @@ class DashboardModel extends Base {
     ]
   }
 
-  getAllByOrgId (orgId) {
+  async getAllByOrgId (orgId) {
     return cknex().select('*')
       .from('dashboards_by_orgId_and_slug')
       .where('orgId', '=', orgId)
       .run()
       .map(this.defaultOutput)
+      .then((dashboards) => {
+        return _.orderBy(dashboards, 'displayOrder', 'asc')
+      })
   }
 
   getByOrgIdAndSlug (orgId, slug) {
