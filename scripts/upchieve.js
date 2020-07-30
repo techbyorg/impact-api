@@ -6,6 +6,22 @@ import Metric from '../graphql/metric/model.js'
 import Block from '../graphql/block/model.js'
 import { setup } from '../services/setup.js'
 
+/*
+TODO: segments.
+segmentId on datapoints_counter (metricId, segmentId, dimension...)
+segment:
+  - groupId
+  - id
+  - slug
+segmentGroup
+  - id
+  - name (eg company, organization)
+
+shouldn't have to do anything with uniques
+
+sdk passes in array of segmentIds
+*/
+
 setup().then(() => {
   console.log(`${cknex.getTimeUuidStr()}`)
 

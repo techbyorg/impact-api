@@ -2,7 +2,7 @@ import _ from 'lodash'
 import Promise from 'bluebird'
 import moment from 'moment-timezone'
 import crypto from 'crypto'
-import { GraphqlFormatter, Loader, Time, Cache } from 'backend-shared'
+import { GraphqlFormatter, Loader, Time, Cache, cknex } from 'backend-shared'
 
 import Datapoint from './model.js'
 import Dimension from '../dimension/model.js'
@@ -32,8 +32,8 @@ const INCREMENT_UNIQUE_LOCK_EXPIRE_SECONDS = 5
 // for derived metrics
 const datapointLoaderFn = Loader.withContext(async (options, context) => {
   options = _.map(options, (option) => {
-    const [metricId, dimensionId, dimensionValue, startDate, endDate, timeScale] = option.split(':')
-    return { metricId, dimensionId, dimensionValue, startDate, endDate, timeScale }
+    const [metricId, segmentId, dimensionId, dimensionValue, startDate, endDate, timeScale] = option.split(':')
+    return { metricId, segmentId, dimensionId, dimensionValue, startDate, endDate, timeScale }
   })
   const { startDate, endDate, timeScale } = options[0]
   console.log(startDate, endDate, timeScale)
@@ -44,8 +44,8 @@ const datapointLoaderFn = Loader.withContext(async (options, context) => {
   //   metricIds, dimensionIds, { minScaledTime, maxScaledTime }
   // )
 
-  return Promise.map(options, ({ metricId, dimensionId, dimensionValue }) => {
-    return Datapoint.getAllByMetricIdAndDimensionAndTimes(metricId, dimensionId, dimensionValue, {
+  return Promise.map(options, ({ metricId, segmentId, dimensionId, dimensionValue }) => {
+    return Datapoint.getAllByMetricIdAndDimensionAndTimes(metricId, segmentId, dimensionId, dimensionValue, {
       timeScale, minScaledTime, maxScaledTime
     })
   }
@@ -72,7 +72,8 @@ const dimensionLoaderFn = Loader.withContext(async (slugs, context) => {
 
 export default {
   Dimension: {
-    datapoints: async (dimension, { startDate, endDate, timeScale }, context) => {
+    datapoints: async (dimension, { segmentId, startDate, endDate, timeScale }, context) => {
+      segmentId = segmentId || cknex.emptyUuid
       const loader = datapointLoaderFn(context)
       const metric = dimension._metric
       const block = metric._block
@@ -84,16 +85,16 @@ export default {
       let datapoints
       if (metric.type === 'derived') {
         datapoints = await getDerivedDatapoints(
-          dimension, { loader, startDate, endDate, timeScale }
+          dimension, { loader, segmentId, startDate, endDate, timeScale }
         )
       } else {
         datapoints = await getDatapoints(
-          dimension, { loader, startDate, endDate, timeScale }
+          dimension, { loader, segmentId, startDate, endDate, timeScale }
         )
       }
 
       if (block?.settings.type === 'line') {
-        datapoints = addZeroes(datapoints, { dimension, startDate, endDate, timeScale })
+        datapoints = addZeroes(datapoints, { dimension, segmentId, startDate, endDate, timeScale })
       }
 
       return GraphqlFormatter.fromScylla(datapoints)
@@ -104,6 +105,7 @@ export default {
     datapointIncrement: async (rootValue, options, context) => {
       const {
         metricSlug, dimensionValues, date, isTotal, isSingleTimeScale, timeScale = 'day'
+        // segmentSlugs
       } = options
       let { count } = options
       const { org } = context
@@ -114,11 +116,9 @@ export default {
       const dimensions = await getDimensions(
         dimensionValues, { metricLoader, dimensionLoader }
       )
+      // TODO: get segmentIds from segmentSlugs
+      const segmentId = cknex.emptyUuid // TODO
       const scaledTime = Time.getScaledTimeByTimeScale(timeScale, date, org.timezone)
-
-      console.log('increment', metricSlug, isTotal, scaledTime)
-      // FIXME: "all dimension" should be treated differently for isTotal
-      // eg { browser: 'chrome', os: 'linux' }
 
       if (isTotal) {
         // grab current values and adjust count accordingly
@@ -127,13 +127,21 @@ export default {
           throw new Error('Can only set total for 1 dimension at a time')
         }
         count = await adjustCountForTotal({
-          count, metric, dimension: dimensions[0], timeScale, scaledTime
+          count,
+          metric,
+          dimension: dimensions[0],
+          segmentId,
+          timeScale,
+          scaledTime
         })
       }
+
+      console.log('increment', metricSlug, isTotal, scaledTime, '...', count, segmentId)
 
       await Promise.map(dimensions, async (dimension) => {
         const datapoint = {
           metricId: metric.id,
+          segmentId,
           dimensionId: dimension.id,
           dimensionValue: dimension.value,
           timeScale,
@@ -149,24 +157,30 @@ export default {
       return true
     },
 
-    datapointIncrementUnique: async (rootValue, { metricSlug, hash, date }, { org }) => {
+    datapointIncrementUnique: async (rootValue, { metricSlug, segmentSlugs, hash, date }, { org }) => {
       console.log('inc uniq', org)
       const potentiallyHashed = hash
       // clients should be hashing, but we'll hash just in case they don't
       hash = crypto.createHash('sha256').update(potentiallyHashed).digest('base64')
-      await incrementUnique({ metricSlug, hash, date, org })
+      await incrementUnique({ metricSlug, segmentSlugs, hash, date, org })
       return true
     }
   }
 }
 
-async function incrementUnique ({ metricSlug, dimensionId, dimensionValue, hash, date, org }) {
+async function incrementUnique (options) {
+  const {
+    metricSlug, dimensionId, dimensionValue, hash, date, org
+    // segmentSlugs
+  } = options
   const cachePrefix = LOCK_PREFIXES.DATAPOINT_INCREMENT_UNIQUE
   const cacheKey = `${cachePrefix}:${metricSlug}:${dimensionId}:${dimensionValue}:${hash}`
   // not atomic due to unique lookups, so we lock during call
   Cache.lock(cacheKey, async () => {
     // console.log('inc unique', metricSlug, hash)
     const metric = await Metric.getByOrgIdAndSlug(org.id, metricSlug)
+    // TODO: get segmentIds from segmentSlugs
+    const segmentId = cknex.emptyUuid // TODO
     const scaledTimes = Time.getScaledTimesByTimeScales(Datapoint.TIME_SCALES, date, org.timezone)
     const timeScalesByScaledTime = _.zipObject(scaledTimes, Datapoint.TIME_SCALES)
     const uniques = await Unique.getAll({
@@ -185,6 +199,7 @@ async function incrementUnique ({ metricSlug, dimensionId, dimensionValue, hash,
         if (countSinceAllUnique <= max) {
           return incrementUnique({
             metricSlug,
+            // segementSlugs,
             dimensionId: config.RETENTION_DIMENSION_UUID,
             dimensionValue: `${prefix}${countSinceAllUnique}`,
             hash,
@@ -204,7 +219,14 @@ async function incrementUnique ({ metricSlug, dimensionId, dimensionValue, hash,
         Unique.upsert({
           metricId: metric.id, dimensionId, dimensionValue, hash, scaledTime, addTime: date
         }),
-        Datapoint.increment({ metricId: metric.id, dimensionId, dimensionValue, timeScale, scaledTime })
+        Datapoint.increment({
+          metricId: metric.id,
+          segmentId,
+          dimensionId,
+          dimensionValue,
+          timeScale,
+          scaledTime
+        })
       ])
     })
     return true

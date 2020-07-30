@@ -33,6 +33,7 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
   const datapoints = _.flatten(await Promise.map(metrics, async ({ slug, datapoints }) => {
     const metric = await metricLoader(context).load(slug)
     const metricId = metric.id
+    const segmentId = cknex.emptyUuid
     const metricDatapoints = await Promise.map(datapoints, async (datapoint) => {
       // legacy fix
       if (datapoint.scaledTime === 'ALL') { datapoint.scaledTime = 'ALL:ALL' }
@@ -66,6 +67,7 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
 
       return {
         metricId,
+        segmentId,
         dimensionId,
         timeScale,
         dimensionValue: datapoint.dimensionValue || 'all',
@@ -76,7 +78,7 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
     const dimensionIds = _.uniq(_.map(metricDatapoints, 'dimensionId'))
     const existingDatapoints = _.flatten(await Promise.map(dimensionIds, (dimensionId) => {
       return Datapoint.getAllByMetricIdAndDimensionAndTimes(
-        metricId, dimensionId, '', {
+        metricId, segmentId, dimensionId, '', {
           timeScale,
           minScaledTime: Time.getScaledTimeByTimeScale(timeScale, moment.utc(startDate)),
           maxScaledTime: Time.getScaledTimeByTimeScale(timeScale, moment.utc(endDate))

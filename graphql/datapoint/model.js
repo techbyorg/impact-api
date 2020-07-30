@@ -25,6 +25,7 @@ class DatapointModel extends Base {
         keyspace: 'impact',
         fields: {
           metricId: 'uuid',
+          segmentId: { type: 'uuid', defaultFn: () => cknex.emptyUuid }, // for have different dashboards per sub-org or corporate sponsor
           dimensionId: { type: 'uuid', defaultFn: () => cknex.emptyUuid }, // eg state, zip
           timeScale: { type: 'text', defaultFn: () => 'all' },
           timeBucket: { type: 'text', defaultFn: () => 'ALL:ALL' }, // see getBucketTimeScaleByScaledTime
@@ -35,7 +36,7 @@ class DatapointModel extends Base {
         primaryKey: {
           // TODO: wipe & refill data.
           // TODO: have everything insert & use timeScale to fetch
-          partitionKey: ['metricId', 'dimensionId', 'timeScale', 'timeBucket'],
+          partitionKey: ['metricId', 'segmentId', 'dimensionId', 'timeScale', 'timeBucket'],
           clusteringColumns: ['scaledTime', 'dimensionValue']
         },
         withClusteringOrderBy: ['scaledTime', 'desc']
@@ -66,7 +67,7 @@ class DatapointModel extends Base {
   }
 
   // empty string dimensionValue gets all dimensionValues
-  async getAllByMetricIdAndDimensionAndTimes (metricId, dimensionId, dimensionValue, times) {
+  async getAllByMetricIdAndDimensionAndTimes (metricId, segmentId, dimensionId, dimensionValue, times) {
     const { timeScale, minScaledTime, maxScaledTime } = times
 
     const bucketTimeScale = this.getBucketTimeScaleByScaledTime(minScaledTime)
@@ -76,6 +77,7 @@ class DatapointModel extends Base {
       return cknex().select('*')
         .from('datapoints_counter')
         .where('metricId', '=', metricId)
+        .andWhere('segmentId', '=', segmentId)
         .andWhere('dimensionId', '=', dimensionId)
         .andWhere('timeScale', '=', timeScale)
         .andWhere('timeBucket', '=', timeBucket)
@@ -93,7 +95,7 @@ class DatapointModel extends Base {
       .map(this.defaultOutput)
   }
 
-  async get (metricId, dimensionId, dimensionValue, timeScale, scaledTime) {
+  async get (metricId, segmentId, dimensionId, dimensionValue, timeScale, scaledTime) {
     const bucketTimeScale = this.getBucketTimeScaleByScaledTime(scaledTime)
     const time = Time.scaledTimeToUTC(scaledTime)
     const timeBucket = Time.getScaledTimeByTimeScale(bucketTimeScale, time)
@@ -101,6 +103,7 @@ class DatapointModel extends Base {
     return cknex().select('*')
       .from('datapoints_counter')
       .where('metricId', '=', metricId)
+      .andWhere('segmentId', '=', segmentId)
       .andWhere('dimensionId', '=', dimensionId)
       .andWhere('dimensionValue', '=', dimensionValue)
       .andWhere('timeScale', '=', timeScale)
@@ -116,6 +119,7 @@ class DatapointModel extends Base {
     cknex().update('datapoints_counter')
       .increment('count', count)
       .where('metricId', '=', datapoint.metricId)
+      .andWhere('segmentId', '=', datapoint.segmentId)
       .andWhere('dimensionId', '=', datapoint.dimensionId)
       .andWhere('timeScale', '=', datapoint.timeScale)
       .andWhere('timeBucket', '=', datapoint.timeBucket)

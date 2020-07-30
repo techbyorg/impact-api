@@ -12,16 +12,16 @@ import Unique from '../graphql/unique/model.js'
 const { extendMoment } = momentRange
 const moment = extendMoment(Moment)
 
-export async function getDatapoints (dimension, { loader, startDate, endDate, timeScale }) {
+export async function getDatapoints (dimension, { loader, segmentId, startDate, endDate, timeScale }) {
   const metric = dimension._metric
   const datapoints = await loader.load(
-    [metric.id, dimension.id, '', startDate, endDate, timeScale].join(':')
+    [metric.id, segmentId, dimension.id, '', startDate, endDate, timeScale].join(':')
   )
 
   return sumDatapointsIfNecessary(dimension, datapoints)
 }
 
-export async function getDerivedDatapoints (dimension, { loader, startDate, endDate, timeScale }) {
+export async function getDerivedDatapoints (dimension, { loader, segmentId, startDate, endDate, timeScale }) {
   const metric = dimension._metric
   const transforms = metric.transforms || []
   const transformsWithDatapoints = await Promise.map(
@@ -29,7 +29,7 @@ export async function getDerivedDatapoints (dimension, { loader, startDate, endD
     async ({ operation, metricId, dimensionId, dimensionValue }) => {
       dimensionId = dimensionId || dimension.id || cknex.emptyUuid
       let datapoints = await loader.load(
-        [metricId, dimensionId, dimensionValue || '', startDate, endDate, timeScale].join(':')
+        [metricId, segmentId, dimensionId, dimensionValue || '', startDate, endDate, timeScale].join(':')
       )
       datapoints = sumDatapointsIfNecessary(dimension, datapoints)
       return { operation, datapoints, dimensionValue }
@@ -148,8 +148,8 @@ async function getDerivedDimensionValue ({ transforms }, { hash }, { metricLoade
   return value
 }
 
-export async function adjustCountForTotal ({ count, metric, dimension, timeScale, scaledTime }) {
-  const currentDatapoint = await Datapoint.get(metric.id, dimension.id, dimension.value, timeScale, scaledTime)
+export async function adjustCountForTotal ({ count, metric, dimension, segmentId, timeScale, scaledTime }) {
+  const currentDatapoint = await Datapoint.get(metric.id, segmentId, dimension.id, dimension.value, timeScale, scaledTime)
   if (currentDatapoint) {
     console.log('adjust', 'set', count, 'current', dimension.id, dimension.value, currentDatapoint.count)
     count = count - currentDatapoint.count
