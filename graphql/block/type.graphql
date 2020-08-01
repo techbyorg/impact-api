@@ -12,7 +12,7 @@ type BlockConnection {
 }
 
 extend type Query {
-  blocks(dashboardId: ID!): BlockConnection
+  blocks(dashboardId: ID!, hackPw: String): BlockConnection # FIXME: rm hackPw when internal dashboard
 }
 
 extend type Dashboard {

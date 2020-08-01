@@ -160,6 +160,11 @@ export async function adjustCountForTotal ({ count, metric, dimension, segmentId
 export function addZeroes (datapoints, { dimension, startDate, endDate, timeScale }) {
   const metric = dimension._metric
 
+  // if there is no data at end of time frame, don't force zeroes
+  const datapointsEndDate = moment.utc(Time.scaledTimeToUTC(_.first(datapoints)?.scaledTime))
+    .format('YYYY-MM-DD')
+  endDate = _.min([endDate, datapointsEndDate])
+
   const range = moment.range(startDate, endDate)
   const rangeArr = Array.from(range.by(timeScale))
   const allDatapoints = _.map(rangeArr, (date) => ({

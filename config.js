@@ -15,6 +15,7 @@ const config = {
   ENV: env.DEBUG_ENV || env.NODE_ENV,
   MAX_CPU: env.IMPACT_API_MAX_CPU || 1,
   PHIL_HTTP_API_URL: env.PHIL_HTTP_API_URL,
+  UPCHIEVE_HACK_PASS: env.UPCHIEVE_HACK_PASS, // FIXME: rm after internal dashboards
   RETENTION_DIMENSION_UUID: '1381670f-1dd2-11b2-7f7f-7f7f7f7f7f7f',
   REDIS: {
     PREFIX: 'impact_api',

@@ -93,7 +93,7 @@ export default {
         )
       }
 
-      if (block?.settings.type === 'line') {
+      if (block?.settings.type === 'line' && !block?.settings.omitZeroes) {
         datapoints = addZeroes(datapoints, { dimension, segmentId, startDate, endDate, timeScale })
       }
 
