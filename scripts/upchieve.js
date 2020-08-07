@@ -4,6 +4,7 @@ import Dashboard from '../graphql/dashboard/model.js'
 import Dimension from '../graphql/dimension/model.js'
 import Metric from '../graphql/metric/model.js'
 import Block from '../graphql/block/model.js'
+import Segment from '../graphql/segment/model.js'
 import { setup } from '../services/setup.js'
 
 /*
@@ -231,6 +232,20 @@ setup().then(() => {
           metricId: 'ec999250-be50-11ea-87b4-3a1c78ffe991'
         }
       ]
+    },
+    {
+      id: 'bd99d7e0-d790-11ea-bb0e-6ae86781b0d8',
+      slug: 'volunteer-session-rating',
+      name: 'Volunteer session rating',
+      dimensionIds: ['7d8ed360-bee2-11ea-90e4-414471c2de48', '8cf0f770-bee2-11ea-a00e-3050789e3d8f'],
+      orgId: ORG_ID
+    },
+    {
+      id: 'd40b6670-d794-11ea-9e8a-6aaab8fdb7ea',
+      slug: 'volunteer-session-ratings',
+      name: 'Volunteer session rating count',
+      dimensionIds: ['7d8ed360-bee2-11ea-90e4-414471c2de48', '8cf0f770-bee2-11ea-a00e-3050789e3d8f'],
+      orgId: ORG_ID
     }
   ]
 
@@ -392,11 +407,22 @@ setup().then(() => {
       id: '47b78d20-bcdc-11ea-89ba-7b84cbe980a7',
       slug: 'volunteer-overview',
       name: 'Overview',
-      metricIds: [{ id: 'f53b04c0-be23-11ea-b331-990b97fd2b0a' }],
+      metricIds: [{ id: 'c18b1040-bcaa-11ea-a644-bfdddfa3ff85' }],
       dashboardId: 'f3a732e0-bb45-11ea-b4d6-01ceb3744d9b',
       settings: {
         type: 'overview',
         isPinned: true
+      }
+    },
+    {
+      id: 'b41ad9d0-d3a3-11ea-b273-df031a81f9e4',
+      slug: 'volunteer-overview-internal',
+      name: 'Overview',
+      metricIds: [{ id: 'f53b04c0-be23-11ea-b331-990b97fd2b0a' }],
+      dashboardId: 'f3a732e0-bb45-11ea-b4d6-01ceb3744d9b',
+      settings: {
+        type: 'overview',
+        isPrivate: true
       }
     },
     {
@@ -490,11 +516,132 @@ setup().then(() => {
     }
   ]
 
+  const segments = [
+    {
+      id: '3a9114c0-d755-11ea-8a7d-92d907204a24',
+      slug: 'student-none',
+      orgId: ORG_ID
+    },
+    {
+      id: '4905f3a0-d74a-11ea-91bf-68939e7f3b8b',
+      slug: 'student-edready',
+      orgId: ORG_ID
+    },
+    {
+      id: 'c3738780-d752-11ea-8020-c5b666b2dbd4',
+      slug: 'student-citysquash',
+      orgId: ORG_ID
+    },
+    {
+      id: 'c3738781-d752-11ea-93fa-c963b63117e9',
+      slug: 'student-school-closure',
+      orgId: ORG_ID
+    },
+    {
+      id: 'c3738782-d752-11ea-aafc-62636c142e88',
+      slug: 'student-queens-library',
+      orgId: ORG_ID
+    },
+    {
+      id: 'c373ae90-d752-11ea-8871-fdf99f74cbef',
+      slug: 'student-oasis',
+      orgId: ORG_ID
+    },
+    {
+      id: 'c373ae91-d752-11ea-87ef-24b46ca7cfe8',
+      slug: 'student-summer-search',
+      orgId: ORG_ID
+    },
+    {
+      id: 'c373ae92-d752-11ea-96ee-e41353af58ce',
+      slug: 'student-mindsmatter-co',
+      orgId: ORG_ID
+    },
+    {
+      id: 'c373ae93-d752-11ea-8429-3d4b1639f3c3',
+      slug: 'student-btny',
+      orgId: ORG_ID
+    },
+    {
+      id: 'c373ae94-d752-11ea-8a0f-10df61f7ad53',
+      slug: 'student-college-track',
+      orgId: ORG_ID
+    },
+    {
+      id: 'c373ae95-d752-11ea-9e8e-475846267960',
+      slug: 'student-spark',
+      orgId: ORG_ID
+    },
+    {
+      id: 'c373ae96-d752-11ea-9abd-8d089f03a8e8',
+      slug: 'student-nyc-mission',
+      orgId: ORG_ID
+    },
+    {
+      id: 'c373ae97-d752-11ea-8bfd-b528445ad612',
+      slug: 'student-college-is-real',
+      orgId: ORG_ID
+    },
+    {
+      id: 'c373ae98-d752-11ea-a974-4fc00725035c',
+      slug: 'student-south-bronx-united',
+      orgId: ORG_ID
+    },
+    {
+      id: 'c373d5a0-d752-11ea-9e58-a1412c59c45d',
+      slug: 'student-eligibility-appeal',
+      orgId: ORG_ID
+    },
+
+    // volunteers
+    {
+      id: '13915dd0-d818-11ea-ae36-f0a1c5a489b0',
+      slug: 'volunteer-none',
+      orgId: ORG_ID
+    },
+    {
+      id: '7eafc920-d80f-11ea-8135-0e584cd04fab',
+      slug: 'volunteer-example',
+      orgId: ORG_ID
+    },
+    {
+      id: '7eafc921-d80f-11ea-8880-f22f5e4ffa9c',
+      slug: 'volunteer-atlassian',
+      orgId: ORG_ID
+    },
+    {
+      id: '7eafc922-d80f-11ea-93cc-d218c7c704ee',
+      slug: 'volunteer-verizon',
+      orgId: ORG_ID
+    },
+    {
+      id: '7eafc923-d80f-11ea-8cf2-fe3996136618',
+      slug: 'volunteer-pwc',
+      orgId: ORG_ID
+    },
+    {
+      id: '7eafc924-d80f-11ea-a205-2ff7f7ac3529',
+      slug: 'volunteer-queens-library',
+      orgId: ORG_ID
+    },
+    {
+      id: '7eaff030-d80f-11ea-9efb-41529ad65462',
+      slug: 'volunteer-mizuho',
+      orgId: ORG_ID
+    },
+    {
+      id: '95bafc70-d80f-11ea-8a54-b1785c783c65',
+      slug: 'volunteer-goldman-sachs',
+      orgId: ORG_ID
+    }
+  ]
+
   Promise.all([
     Dashboard.batchUpsert(dashboards),
     Dimension.batchUpsert(dimensions),
     Metric.batchUpsert(metrics),
-    Block.batchUpsert(blocks)
+    Block.batchUpsert(blocks),
+    Segment.batchUpsert(segments)
   ]).then(() => {
     console.log('done')
   })

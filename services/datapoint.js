@@ -161,9 +161,12 @@ export function addZeroes (datapoints, { dimension, startDate, endDate, timeScal
   const metric = dimension._metric
 
   // if there is no data at end of time frame, don't force zeroes
-  const datapointsEndDate = moment.utc(Time.scaledTimeToUTC(_.first(datapoints)?.scaledTime))
-    .format('YYYY-MM-DD')
-  endDate = _.min([endDate, datapointsEndDate])
+  const recentDatapointScaledTime = _.first(datapoints)?.scaledTime
+  if (recentDatapointScaledTime) {
+    const datapointsEndDate = moment.utc(Time.scaledTimeToUTC(recentDatapointScaledTime))
+      .format('YYYY-MM-DD')
+    endDate = _.min([endDate, datapointsEndDate])
+  }
 
   const range = moment.range(startDate, endDate)
   const rangeArr = Array.from(range.by(timeScale))

@@ -12,7 +12,7 @@ type DatapointConnection {
 }
 
 extend type Dimension {
-  datapoints(startDate: String, endDate: String, timeScale: String): DatapointConnection
+  datapoints(segmentId: ID, startDate: String, endDate: String, timeScale: String): DatapointConnection
 }
 
 extend type Mutation {

@@ -6,7 +6,7 @@ import config from '../../config.js'
 
 export default {
   Query: {
-    blocks: async (rootValue, { dashboardId, hackPw }) => {
+    blocks: async (rootValue, { dashboardId, segmentId, hackPw }) => {
       return Block.getAllByDashboardId(dashboardId)
         .then((blocks) => {
           if (hackPw === config.UPCHIEVE_HACK_PASS) {

@@ -1,0 +1,15 @@
+type Segment {
+  id: ID!
+  orgId: ID!
+  slug: String!
+  name: String
+}
+
+type SegmentConnection {
+  nodes: [Segment!]
+  totalCount: Int
+}
+
+extend type Query {
+  segments(orgId: ID!): SegmentConnection
+}

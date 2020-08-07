@@ -1,0 +1,27 @@
+version: "3.2"
+services: 
+  elasticsearch:
+    image: redis:6.0.6
+    volumes:
+      - /data:/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+      - cluster.routing.allocation.disk.threshold_enabled=false
+      - ES_JAVA_OPTS="-Xms512m -Xmx512m"
+
+  # redis:
+  #   image: redis:6.0.6
+  #   volumes:
+  #     - /data:/data
+  #   ports:
+  #     - "27017:27017"
+          
+  scylla:
+    image: scylladb/scylla:4.1.3
+    volumes:
+      - /var/lib/scylla:/var/lib/scylla
+    ports:
+      - "9042:9042"

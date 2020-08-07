@@ -8,6 +8,7 @@ import { Loader, Time, cknex } from 'backend-shared'
 import Datapoint from '../graphql/datapoint/model.js'
 import Dimension from '../graphql/dimension/model.js'
 import Metric from '../graphql/metric/model.js'
+import Segment from '../graphql/segment/model.js'
 
 const ORG_ID = 'b6295100-bb45-11ea-91c2-9d708da068b3' // upchieve
 
@@ -19,6 +20,13 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
       .then((metrics) => {
         metrics = _.keyBy(metrics, 'slug')
         return _.map(slugs, slug => metrics[slug])
+      })
+  })
+  const segmentLoader = Loader.withContext(async (slugs, context) => {
+    return Segment.getAllByOrgIdAndSlugs(ORG_ID, slugs)
+      .then((segments) => {
+        segments = _.keyBy(segments, 'slug')
+        return _.map(slugs, slug => segments[slug])
       })
   })
   const dimensionLoader = Loader.withContext(async (slugs, context) => {
@@ -33,12 +41,14 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
   const datapoints = _.flatten(await Promise.map(metrics, async ({ slug, datapoints }) => {
     const metric = await metricLoader(context).load(slug)
     const metricId = metric.id
-    const segmentId = cknex.emptyUuid
-    const metricDatapoints = await Promise.map(datapoints, async (datapoint) => {
+    let metricDatapoints = await Promise.map(datapoints, async (datapoint) => {
       // legacy fix
       if (datapoint.scaledTime === 'ALL') { datapoint.scaledTime = 'ALL:ALL' }
 
       // legacy fix
+      if (!datapoint.scaledTime) {
+        console.log(datapoint)
+      }
       const timeScalePrefix = datapoint.scaledTime.match(/([A-Z]+):/)[1]
       const timeScale = timeScalePrefix === 'All'
         ? 'all'
@@ -65,6 +75,20 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
         dimensionId = dimension.id
       }
 
+      let segmentId
+      if (datapoint.segmentSlug) {
+        console.log('slug', datapoint.segmentSlug)
+        const segment = await segmentLoader(context).load(datapoint.segmentSlug)
+        if (!segment) {
+          console.log('missing segment', datapoint.segmentSlug)
+          segmentId = null
+        } else {
+          segmentId = segment.id
+        }
+      } else {
+        segmentId = cknex.emptyUuid
+      }
+
       return {
         metricId,
         segmentId,
@@ -75,15 +99,19 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
         count: datapoint.count
       }
     })
+    metricDatapoints = _.filter(metricDatapoints, 'segmentId')
+    const segmentIds = _.uniq(_.map(metricDatapoints, 'segmentId'))
     const dimensionIds = _.uniq(_.map(metricDatapoints, 'dimensionId'))
-    const existingDatapoints = _.flatten(await Promise.map(dimensionIds, (dimensionId) => {
-      return Datapoint.getAllByMetricIdAndDimensionAndTimes(
-        metricId, segmentId, dimensionId, '', {
-          timeScale,
-          minScaledTime: Time.getScaledTimeByTimeScale(timeScale, moment.utc(startDate)),
-          maxScaledTime: Time.getScaledTimeByTimeScale(timeScale, moment.utc(endDate))
-        }
-      )
+    const existingDatapoints = _.flatten(await Promise.map(segmentIds, async (segmentId) => {
+      return await Promise.map(dimensionIds, (dimensionId) => {
+        return Datapoint.getAllByMetricIdAndDimensionAndTimes(
+          metricId, segmentId, dimensionId, '', {
+            timeScale,
+            minScaledTime: Time.getScaledTimeByTimeScale(timeScale, moment.utc(startDate)),
+            maxScaledTime: Time.getScaledTimeByTimeScale(timeScale, moment.utc(endDate))
+          }
+        )
+      })
     }))
     // console.log('exist', existingDatapoints)
     return _.filter(_.map(metricDatapoints, (datapoint) => {
@@ -95,6 +123,7 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
       }
     }))
   }))
+  // console.log('seg', _.filter(datapoints, { segmentId: 'c373ae96-d752-11ea-9abd-8d089f03a8e8' }))
 
   return Promise.map(
     datapoints,
@@ -108,7 +137,7 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
   ).tap(() => { console.log('done') })
 }
 
-// importDatapoints({ startDate: '2020-07-18', endDate: '2020-07-18', timeScale: 'day', incrementAll: true })
+// importDatapoints({ startDate: '2020-05-01', endDate: '2020-05-05', timeScale: 'day', incrementAll: true })
 // importDatapoints({ startDate: '2020-07-10', endDate: '2020-07-18', timeScale: 'day' })
 // single run import:
 // Promise.each([
@@ -119,9 +148,10 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
 // ], importDatapoints)
 
 async function getUpchieveMetrics ({ startDate, endDate, timeScale = 'day' }) {
-  console.log('upchieve req')
+  console.log('upchieve req', `http://localhost:3000/metrics?minTime=${startDate}&maxTime=${endDate}&timeScale=${timeScale}`)
   let metrics = await request(
-    `https://app.upchieve.org/metrics?minTime=${startDate}&maxTime=${endDate}&timeScale=${timeScale}`
+    // `https://app.upchieve.org/metrics?minTime=${startDate}&maxTime=${endDate}&timeScale=${timeScale}`
+    `http://localhost:3000/metrics?minTime=${startDate}&maxTime=${endDate}&timeScale=${timeScale}`
     , { json: true }
   )
   metrics = _.map(metrics, (metric) => {
@@ -141,8 +171,8 @@ async function getUpchieveMetrics ({ startDate, endDate, timeScale = 'day' }) {
     }))
 
     if (metric.slug === 'students') {
-      const datapointsByDimensionValue = _.groupBy(metric.datapoints, ({ scaledTime, dimensionId, dimensionValue }) =>
-        `${scaledTime}:${dimensionId}:${dimensionValue}`
+      const datapointsByDimensionValue = _.groupBy(metric.datapoints, ({ segmentSlug, scaledTime, dimensionSlug, dimensionValue }) =>
+        `${segmentSlug}:${scaledTime}:${dimensionSlug}:${dimensionValue}`
       )
       metric.datapoints = _.map(datapointsByDimensionValue, (datapoints) => {
         return _.defaults({ count: _.sumBy(datapoints, 'count') }, datapoints[0])
