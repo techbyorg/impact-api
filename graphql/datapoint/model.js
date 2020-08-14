@@ -116,7 +116,7 @@ class DatapointModel extends Base {
   increment (datapoint, count = 1) {
     datapoint = _.omit(this.defaultInput(datapoint), 'count')
 
-    cknex().update('datapoints_counter')
+    return cknex().update('datapoints_counter')
       .increment('count', count)
       .where('metricId', '=', datapoint.metricId)
       .andWhere('segmentId', '=', datapoint.segmentId)
@@ -131,9 +131,9 @@ class DatapointModel extends Base {
   incrementAllTimeScales (datapoint, count = 1) {
     datapoint = _.omit(this.defaultInput(datapoint), ['count', 'timeBucket'])
     const time = Time.scaledTimeToUTC(datapoint.scaledTime)
-    Promise.map(TIME_SCALES, (timeScale) => {
+    return Promise.map(TIME_SCALES, (timeScale) => {
       const scaledTime = Time.getScaledTimeByTimeScale(timeScale, time)
-      this.increment(_.defaults({ timeScale, scaledTime }, datapoint), count)
+      return this.increment(_.defaults({ timeScale, scaledTime }, datapoint), count)
     })
   }
 

@@ -13,6 +13,7 @@ import Segment from '../graphql/segment/model.js'
 const ORG_ID = 'b6295100-bb45-11ea-91c2-9d708da068b3' // upchieve
 
 export async function importDatapoints ({ startDate, endDate, timeScale, incrementAll }) {
+  console.log('import....')
   const metrics = await getUpchieveMetrics({ startDate, endDate, timeScale })
 
   const metricLoader = Loader.withContext(async (slugs, context) => {
@@ -37,8 +38,7 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
       })
   })
   const context = { c: 'context' }
-
-  const datapoints = _.flatten(await Promise.map(metrics, async ({ slug, datapoints }) => {
+  await Promise.map(metrics, async ({ slug, datapoints }) => {
     const metric = await metricLoader(context).load(slug)
     const metricId = metric.id
     let metricDatapoints = await Promise.map(datapoints, async (datapoint) => {
@@ -77,7 +77,6 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
 
       let segmentId
       if (datapoint.segmentSlug) {
-        console.log('slug', datapoint.segmentSlug)
         const segment = await segmentLoader(context).load(datapoint.segmentSlug)
         if (!segment) {
           console.log('missing segment', datapoint.segmentSlug)
@@ -102,7 +101,7 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
     metricDatapoints = _.filter(metricDatapoints, 'segmentId')
     const segmentIds = _.uniq(_.map(metricDatapoints, 'segmentId'))
     const dimensionIds = _.uniq(_.map(metricDatapoints, 'dimensionId'))
-    const existingDatapoints = _.flatten(await Promise.map(segmentIds, async (segmentId) => {
+    const existingDatapoints = _.flattenDeep(await Promise.map(segmentIds, async (segmentId) => {
       return await Promise.map(dimensionIds, (dimensionId) => {
         return Datapoint.getAllByMetricIdAndDimensionAndTimes(
           metricId, segmentId, dimensionId, '', {
@@ -113,45 +112,52 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
         )
       })
     }))
-    // console.log('exist', existingDatapoints)
-    return _.filter(_.map(metricDatapoints, (datapoint) => {
-      const existingDatapoint = _.find(existingDatapoints, _.omit(datapoint, 'count'))
-      if (!existingDatapoint) {
-        return datapoint
-      } else if (incrementAll && Math.abs(datapoint.count - existingDatapoint.count)) {
-        return _.defaults({ count: datapoint.count - existingDatapoint.count }, datapoint)
-      }
-    }))
-  }))
-  // console.log('seg', _.filter(datapoints, { segmentId: 'c373ae96-d752-11ea-9abd-8d089f03a8e8' }))
+    //     {
+    //   metricId: '9285d290-bb46-11ea-afef-2f1fddc92f4e',
+    //   segmentId: '7eafc923-d80f-11ea-8cf2-fe3996136618',
+    //   dimensionId: '8cf0f770-bee2-11ea-a00e-3050789e3d8f',
+    //   timeScale: 'day',
+    //   timeBucket: 'YR:2020',
+    //   scaledTime: 'DAY:2020-08-10',
+    //   dimensionValue: 'prealgebra',
+    //   count: 9
+    // },
 
-  return Promise.map(
-    datapoints,
-    (datapoint) => {
-      if (incrementAll) {
-        Datapoint.incrementAllTimeScales(_.omit(datapoint, 'count'), datapoint.count)
-      } else {
-        Datapoint.increment(_.omit(datapoint, 'count'), datapoint.count)
+    // console.log('exist', existingDatapoints)
+    return Promise.map(metricDatapoints, (datapoint) => {
+      const existingDatapoint = _.find(existingDatapoints, _.omit(datapoint, 'count'))
+      if (existingDatapoint && Math.abs(datapoint.count - existingDatapoint.count)) {
+        datapoint = _.defaults({ count: datapoint.count - existingDatapoint.count }, datapoint)
+      // }
+      } else if (!existingDatapoint) {
+        console.log('no exist', datapoint)
       }
-    }, { concurrency: 100 }
-  ).tap(() => { console.log('done') })
+      if (incrementAll && datapoint) {
+        return Datapoint.incrementAllTimeScales(_.omit(datapoint, 'count'), datapoint.count)
+      } else if (datapoint) {
+        return Datapoint.increment(_.omit(datapoint, 'count'), datapoint.count)
+      }
+    }, { concurrency: 1 })
+  }, { concurrency: 1 }).tap(() => { console.log('done') })
+
+  // console.log('seg', _.filter(datapoints, { segmentId: 'c373ae96-d752-11ea-9abd-8d089f03a8e8' }))
 }
 
-// importDatapoints({ startDate: '2020-05-01', endDate: '2020-05-05', timeScale: 'day', incrementAll: true })
-// importDatapoints({ startDate: '2020-07-10', endDate: '2020-07-18', timeScale: 'day' })
+// importDatapoints({ startDate: '2020-08-05', endDate: '2020-08-05', timeScale: 'day', incrementAll: true })
+// importDatapoints({ startDate: '2020-08-01', endDate: '2020-08-11', timeScale: 'day' })
 // single run import:
 // Promise.each([
-//   { startDate: '2018-01-01', endDate: '2020-07-19', timeScale: 'month' },
-//   { startDate: '2018-01-01', endDate: '2020-07-19', timeScale: 'week' },
-//   { startDate: '2018-01-01', endDate: '2020-07-19', timeScale: 'day' },
-//   { startDate: '2018-01-01', endDate: '2020-07-19', timeScale: 'all' }
+//   { startDate: '2018-01-01', endDate: '2020-08-11', timeScale: 'month' },
+//   { startDate: '2018-01-01', endDate: '2020-08-11', timeScale: 'week' },
+//   { startDate: '2018-01-01', endDate: '2020-08-11', timeScale: 'day' },
+//   { startDate: '2018-01-01', endDate: '2020-08-11', timeScale: 'all' }
 // ], importDatapoints)
 
 async function getUpchieveMetrics ({ startDate, endDate, timeScale = 'day' }) {
   console.log('upchieve req', `http://localhost:3000/metrics?minTime=${startDate}&maxTime=${endDate}&timeScale=${timeScale}`)
   let metrics = await request(
-    // `https://app.upchieve.org/metrics?minTime=${startDate}&maxTime=${endDate}&timeScale=${timeScale}`
-    `http://localhost:3000/metrics?minTime=${startDate}&maxTime=${endDate}&timeScale=${timeScale}`
+    `https://app.upchieve.org/metrics?minTime=${startDate}&maxTime=${endDate}&timeScale=${timeScale}`
+    // `http://localhost:3000/metrics?minTime=${startDate}&maxTime=${endDate}&timeScale=${timeScale}`
     , { json: true }
   )
   metrics = _.map(metrics, (metric) => {
@@ -170,8 +176,23 @@ async function getUpchieveMetrics ({ startDate, endDate, timeScale = 'day' }) {
       return _.defaults({ dimensionSlug, dimensionValue }, datapoint)
     }))
 
-    if (metric.slug === 'students') {
-      const datapointsByDimensionValue = _.groupBy(metric.datapoints, ({ segmentSlug, scaledTime, dimensionSlug, dimensionValue }) =>
+    // FIXME: rm true when upchieve fix merged in
+    if (true || metric.slug === 'students') {
+      // FIXME: rm when upchieve fix merged in
+      const fixedDatapoints = _.map(metric.datapoints, (datapoint) => {
+        const timeScalePrefix = datapoint.scaledTime.match(/([A-Z]+):/)[1]
+        if (timeScalePrefix === 'MIN') {
+          const date = Time.scaledTimeToUTC(datapoint.scaledTime)
+          const scaledTime = Time.getScaledTimeByTimeScale(timeScale, date, 'America/Chicago')
+          // console.log(datapoint.scaledTime, scaledTime)
+          return _.defaults({ scaledTime }, datapoint)
+        } else {
+          return datapoint
+        }
+      })
+      // end FIXME
+
+      const datapointsByDimensionValue = _.groupBy(fixedDatapoints, ({ segmentSlug, scaledTime, dimensionSlug, dimensionValue }) =>
         `${segmentSlug}:${scaledTime}:${dimensionSlug}:${dimensionValue}`
       )
       metric.datapoints = _.map(datapointsByDimensionValue, (datapoints) => {

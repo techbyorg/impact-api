@@ -592,6 +592,21 @@ setup().then(() => {
       slug: 'student-eligibility-appeal',
       orgId: ORG_ID
     },
+    {
+      id: '519b1e50-dc31-11ea-b31f-4cd57a79f36a',
+      slug: 'student-first-graduate',
+      orgId: ORG_ID
+    },
+    {
+      id: '536bbfa0-dc31-11ea-82a2-86c2099b7e65',
+      slug: 'student-bbbs-nyc',
+      orgId: ORG_ID
+    },
+    {
+      id: '54ce0ec0-dc31-11ea-9695-62047e2a41c0',
+      slug: 'student-ehtp',
+      orgId: ORG_ID
+    },
 
     // volunteers
     {

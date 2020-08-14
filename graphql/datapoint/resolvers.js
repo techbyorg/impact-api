@@ -7,6 +7,7 @@ import { GraphqlFormatter, Loader, Time, Cache, cknex } from 'backend-shared'
 import Datapoint from './model.js'
 import Dimension from '../dimension/model.js'
 import Metric from '../metric/model.js'
+import Segment from '../segment/model.js'
 import Unique from '../unique/model.js'
 import {
   getDatapoints, getDerivedDatapoints, getDimensions, adjustCountForTotal,
@@ -70,13 +71,29 @@ const dimensionLoaderFn = Loader.withContext(async (slugs, context) => {
     })
 })
 
+const segmentLoaderFn = Loader.withContext(async (slugs, context) => {
+  const { orgId } = context
+  return Segment.getAllByOrgIdAndSlugs(orgId, slugs)
+    .then((segments) => {
+      segments = _.keyBy(segments, 'slug')
+      return _.map(slugs, slug => segments[slug])
+    })
+})
+
 export default {
   Dimension: {
-    datapoints: async (dimension, { segmentId, startDate, endDate, timeScale }, context) => {
-      segmentId = segmentId || cknex.emptyUuid
+    datapoints: async (dimension, { segmentSlug, hackPw, startDate, endDate, timeScale }, context) => {
       const loader = datapointLoaderFn(context)
       const metric = dimension._metric
       const block = metric._block
+
+      let segmentId
+      if (segmentSlug) {
+        const contextWithOrgId = _.defaults({ orgId: metric.orgId }, context)
+        const segment = await segmentLoaderFn(contextWithOrgId).load(segmentSlug)
+        segmentId = segment?.id
+      }
+      segmentId = segmentId || cknex.emptyUuid
 
       if (block?.settings.type === 'us-map' || block?.settings.dimensionId) {
         timeScale = 'all'
@@ -158,7 +175,7 @@ export default {
     },
 
     datapointIncrementUnique: async (rootValue, { metricSlug, segmentSlugs, hash, date }, { org }) => {
-      console.log('inc uniq', org)
+      // console.log('inc uniq', org)
       const potentiallyHashed = hash
       // clients should be hashing, but we'll hash just in case they don't
       hash = crypto.createHash('sha256').update(potentiallyHashed).digest('base64')
@@ -214,7 +231,7 @@ async function incrementUnique (options) {
     const missingScaledTimes = _.difference(scaledTimes, existingScaledTimes)
     await Promise.map(missingScaledTimes, (scaledTime) => {
       const timeScale = timeScalesByScaledTime[scaledTime]
-      console.log('inc uniq', metricSlug, dimensionValue, scaledTime)
+      // console.log('inc uniq', metricSlug, dimensionValue, scaledTime)
       return Promise.all([
         Unique.upsert({
           metricId: metric.id, dimensionId, dimensionValue, hash, scaledTime, addTime: date

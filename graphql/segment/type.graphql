@@ -11,5 +11,6 @@ type SegmentConnection {
 }
 
 extend type Query {
-  segments(orgId: ID!): SegmentConnection
+  # FIXME: rm hackPw when internal dashboard
+  segments(orgId: ID!, hackPw: String): SegmentConnection
 }
