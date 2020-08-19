@@ -11,5 +11,5 @@ type DashboardConnection {
 
 extend type Query {
   dashboards(orgId: String): DashboardConnection
-  dashboard(orgId: String, slug: String): Dashboard
+  dashboard(orgId: String, slug: String, hackPw: String): Dashboard
 }

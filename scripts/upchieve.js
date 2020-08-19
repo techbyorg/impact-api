@@ -4,23 +4,22 @@ import Dashboard from '../graphql/dashboard/model.js'
 import Dimension from '../graphql/dimension/model.js'
 import Metric from '../graphql/metric/model.js'
 import Block from '../graphql/block/model.js'
+import Partner from '../graphql/partner/model.js'
 import Segment from '../graphql/segment/model.js'
 import { setup } from '../services/setup.js'
 
 /*
-TODO: segments.
-segmentId on datapoints_counter (metricId, segmentId, dimension...)
-segment:
-  - groupId
-  - id
-  - slug
-segmentGroup
-  - id
-  - name (eg company, organization)
+TODO: partners?
 
-shouldn't have to do anything with uniques
+data.upchieve.org/partner/verizon
 
-sdk passes in array of segmentIds
+partner model w/ dashboardIds & segmentId
+segmentId: '',
+
+data.upchieve.org segments dropdown if authed?
+
+should be flexible & allow for multiple dashboards
+
 */
 
 setup().then(() => {
@@ -30,21 +29,82 @@ setup().then(() => {
 
   const dashboards = [
     {
+      id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2',
+      slug: 'student-partner-dashboard',
+      name: 'Student Partner Dashboard',
+      blockIds: [
+        '0dd9e4f0-bb46-11ea-a3e0-dbf3bf48d9f8', // sessions
+        'b57ca070-bd6d-11ea-b11b-51f5b01276d4', // sessions day of week
+        '9c366280-bd73-11ea-b87c-964ef1776e0c', // sessions hour of day
+        'd62c7d30-bd73-11ea-afd8-6c48e6ae38f1', // sessions topic
+        '4e527bf0-bd85-11ea-9545-2467677d7f85', // sessions subtopic
+        'e6ff8590-bbe2-11ea-b2e2-0a394ea8916e', // new students
+        '0cf1e6e0-bcaf-11ea-9d68-f0e5274248a0', // avg session duration
+        'dea177f0-bcc3-11ea-b87c-9c5d694346f5', // chat messages per session
+        '31f4fbc0-bbf2-11ea-9187-16827e258c82' // overview
+      ],
+      orgId: ORG_ID
+    },
+    {
+      id: '87e9dec5-e009-11ea-8a77-f56702a1dfae',
+      slug: 'volunteer-partner-dashboard',
+      name: 'Volunteer Partner Dashboard',
+      blockIds: [
+        '0dd9e4f0-bb46-11ea-a3e0-dbf3bf48d9f8', // sessions
+        'b57ca070-bd6d-11ea-b11b-51f5b01276d4', // sessions day of week
+        '9c366280-bd73-11ea-b87c-964ef1776e0c', // sessions hour of day
+        'd62c7d30-bd73-11ea-afd8-6c48e6ae38f1', // sessions topic
+        '4e527bf0-bd85-11ea-9545-2467677d7f85', // sessions subtopic
+        'c18b1040-bcaa-11ea-a644-bfdddfa3ff85', // new volunteers
+        '0cf1e6e0-bcaf-11ea-9d68-f0e5274248a0', // avg session duration
+        'dea177f0-bcc3-11ea-b87c-9c5d694346f5' // chat messages per session
+      ],
+      orgId: ORG_ID
+    },
+    {
       id: 'bdbe6310-bb45-11ea-8279-c32478148665',
       slug: 'high-level-metrics',
       name: 'High level metrics',
+      blockIds: [
+        '0dd9e4f0-bb46-11ea-a3e0-dbf3bf48d9f8', // sessions
+        'b57ca070-bd6d-11ea-b11b-51f5b01276d4', // sessions day of week
+        '9c366280-bd73-11ea-b87c-964ef1776e0c', // sessions hour of day
+        'd62c7d30-bd73-11ea-afd8-6c48e6ae38f1', // sessions topic
+        '4e527bf0-bd85-11ea-9545-2467677d7f85', // sessions subtopic
+        'e6ff8590-bbe2-11ea-b2e2-0a394ea8916e', // new students
+        '27a2a290-bf20-11ea-9bb6-7e3b94970fe7', // student states
+        '31f4fbc0-bbf2-11ea-9187-16827e258c82', // overview
+      ],
       orgId: ORG_ID
     },
     {
       id: 'f3a732e0-bb45-11ea-b4d6-01ceb3744d9b',
       slug: 'volunteers',
       name: 'Volunteers',
+      blockIds: [
+        '0f070810-bcab-11ea-bf4c-d4221f6eef95', // new volunteers
+        '610a0ea0-bcab-11ea-8996-4b0c569ecccb', // onboarded volunteers
+        '83689b90-be0b-11ea-8025-82bda63d6893', // certified volunteers
+        '47b78d20-bcdc-11ea-89ba-7b84cbe980a7', // volunteer overview
+        'b41ad9d0-d3a3-11ea-b273-df031a81f9e4', // volunteer overview internal
+        'beda0670-be1d-11ea-9e09-84299b0f73ec' // volunteer onboard percent
+      ],
       orgId: ORG_ID
     },
     {
       id: 'fa5196d0-bb45-11ea-a380-7c3caf68c0ba',
       slug: 'sessions',
       name: 'Sessions',
+      blockIds: [
+
+        '0cf1e6e0-bcaf-11ea-9d68-f0e5274248a0', // avg session duration
+        '6aaaab50-bcaf-11ea-a9c1-032a03f3ac0f', // avg session wait
+        'fd870b10-bcc0-11ea-a79f-685bbc557379', // avg match rate
+        'dea177f0-bcc3-11ea-b87c-9c5d694346f5', // chat messages per session
+        '52c3c690-bcc6-11ea-83f7-49a342e449fa', // session rating by topic
+        '59232540-bd6a-11ea-b56d-2114b4271b67', // session rating subtopic
+        'a03dc5c0-bcca-11ea-b738-2b9c548db971' // session overview
+      ],
       orgId: ORG_ID
     }
   ]
@@ -516,6 +576,151 @@ setup().then(() => {
     }
   ]
 
+  const partners = [
+    {
+      id: '26a386c0-e009-11ea-acbf-c285941b0299',
+      slug: 'edready',
+      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+      segmentId: '4905f3a0-d74a-11ea-91bf-68939e7f3b8b',
+      orgId: ORG_ID
+    },
+    {
+      id: '26a386c1-e009-11ea-a098-7ddabfe3edb3',
+      slug: 'citysquash',
+      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+      segmentId: 'c3738780-d752-11ea-8020-c5b666b2dbd4',
+      orgId: ORG_ID
+    },
+    {
+      id: '26a386c3-e009-11ea-a2e3-aeba1bbee550',
+      slug: 'queens-library',
+      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+      segmentId: 'c3738782-d752-11ea-aafc-62636c142e88',
+      orgId: ORG_ID
+    },
+    {
+      id: '26a3add0-e009-11ea-9801-2fb568864f73',
+      slug: 'oasis',
+      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+      segmentId: 'c373ae90-d752-11ea-8871-fdf99f74cbef',
+      orgId: ORG_ID
+    },
+    {
+      id: 'c373ae92-d752-11ea-96ee-e41353af58ce',
+      slug: 'mindsmatter-co',
+      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+      segmentId: 'c373ae92-d752-11ea-96ee-e41353af58ce',
+      orgId: ORG_ID
+    },
+    {
+      id: '26a3add3-e009-11ea-b94b-42dcae55d1b9',
+      slug: 'btny',
+      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+      segmentId: 'c373ae93-d752-11ea-8429-3d4b1639f3c3',
+      orgId: ORG_ID
+    },
+    {
+      id: '26a3add4-e009-11ea-8e33-8ba99d64c0f9',
+      slug: 'college-track',
+      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+      segmentId: 'c373ae94-d752-11ea-8a0f-10df61f7ad53',
+      orgId: ORG_ID
+    },
+    {
+      id: '26a3add5-e009-11ea-801d-d4b9994a70a1',
+      slug: 'spark',
+      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+      segmentId: 'c373ae95-d752-11ea-9e8e-475846267960',
+      orgId: ORG_ID
+    },
+    {
+      id: '26a3add6-e009-11ea-b4a4-5e02159c6ee8',
+      slug: 'nyc-mission',
+      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+      segmentId: 'c373ae96-d752-11ea-9abd-8d089f03a8e8',
+      orgId: ORG_ID
+    },
+    {
+      id: '26a3add7-e009-11ea-86ef-463ebf752328',
+      slug: 'college-is-real',
+      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+      segmentId: 'c373ae97-d752-11ea-8bfd-b528445ad612',
+      orgId: ORG_ID
+    },
+    {
+      id: '26a3add8-e009-11ea-88a4-8020eac15509',
+      slug: 'south-bronx-united',
+      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+      segmentId: 'c373ae98-d752-11ea-a974-4fc00725035c',
+      orgId: ORG_ID
+    },
+    {
+      id: '26a3d4e0-e009-11ea-a881-09e9c055c37e',
+      slug: 'first-graduate',
+      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+      segmentId: '519b1e50-dc31-11ea-b31f-4cd57a79f36a',
+      orgId: ORG_ID
+    },
+    {
+      id: '87e990a0-e009-11ea-bc9d-c9d6b3fc3db7',
+      slug: 'bbbs-nyc',
+      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+      segmentId: '536bbfa0-dc31-11ea-82a2-86c2099b7e65',
+      orgId: ORG_ID
+    },
+    {
+      id: '87e9b7b0-e009-11ea-8aac-1f21b31077c5',
+      slug: 'ehtp',
+      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+      segmentId: '54ce0ec0-dc31-11ea-9695-62047e2a41c0',
+      orgId: ORG_ID
+    },
+
+    // volunteers
+    {
+      id: '87e9b7b1-e009-11ea-ab6f-1ff7de6a85ae',
+      slug: 'atlassian',
+      dashboardIds: [{ id: '87e9dec5-e009-11ea-8a77-f56702a1dfae' }],
+      segmentId: '7eafc921-d80f-11ea-8880-f22f5e4ffa9c',
+      orgId: ORG_ID
+    },
+    {
+      id: '87e9b7b2-e009-11ea-b621-04bbc5f412d5',
+      slug: 'verizon',
+      dashboardIds: [{ id: '87e9dec5-e009-11ea-8a77-f56702a1dfae' }],
+      segmentId: '7eafc922-d80f-11ea-93cc-d218c7c704ee',
+      orgId: ORG_ID
+    },
+    {
+      id: '87e9b7b3-e009-11ea-b467-fc3ff27f9e17',
+      slug: 'pwc',
+      dashboardIds: [{ id: '87e9dec5-e009-11ea-8a77-f56702a1dfae' }],
+      segmentId: '7eafc923-d80f-11ea-8cf2-fe3996136618',
+      orgId: ORG_ID
+    },
+    {
+      id: '87e9b7b4-e009-11ea-80b0-92f7b2abc003',
+      slug: 'queens-library',
+      dashboardIds: [{ id: '87e9dec5-e009-11ea-8a77-f56702a1dfae' }],
+      segmentId: '7eafc924-d80f-11ea-a205-2ff7f7ac3529',
+      orgId: ORG_ID
+    },
+    {
+      id: '87e9b7b5-e009-11ea-9349-f1fcf8873d83',
+      slug: 'mizuho',
+      dashboardIds: [{ id: '87e9dec5-e009-11ea-8a77-f56702a1dfae' }],
+      segmentId: '7eaff030-d80f-11ea-9efb-41529ad65462',
+      orgId: ORG_ID
+    },
+    {
+      id: '87e9b7b6-e009-11ea-8fc5-a290e3c1327e',
+      slug: 'goldman-sachs',
+      dashboardIds: [{ id: '87e9dec5-e009-11ea-8a77-f56702a1dfae' }],
+      segmentId: '95bafc70-d80f-11ea-8a54-b1785c783c65',
+      orgId: ORG_ID
+    }
+  ]
+
   const segments = [
     {
       id: '3a9114c0-d755-11ea-8a7d-92d907204a24',
@@ -656,7 +861,8 @@ setup().then(() => {
     Dimension.batchUpsert(dimensions),
     Metric.batchUpsert(metrics),
     Block.batchUpsert(blocks),
-    Segment.batchUpsert(segments)
+    Segment.batchUpsert(segments),
+    Partner.batchUpsert(partners)
   ]).then(() => {
     console.log('done')
   })

@@ -11,10 +11,6 @@ type BlockConnection {
   totalCount: Int
 }
 
-extend type Query {
-  blocks(dashboardId: ID!, hackPw: String): BlockConnection # FIXME: rm hackPw when internal dashboard
-}
-
 extend type Dashboard {
   blocks(limit: Int): BlockConnection
 }

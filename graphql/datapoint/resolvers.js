@@ -7,7 +7,6 @@ import { GraphqlFormatter, Loader, Time, Cache, cknex } from 'backend-shared'
 import Datapoint from './model.js'
 import Dimension from '../dimension/model.js'
 import Metric from '../metric/model.js'
-import Segment from '../segment/model.js'
 import Unique from '../unique/model.js'
 import {
   getDatapoints, getDerivedDatapoints, getDimensions, adjustCountForTotal,
@@ -71,28 +70,28 @@ const dimensionLoaderFn = Loader.withContext(async (slugs, context) => {
     })
 })
 
-const segmentLoaderFn = Loader.withContext(async (slugs, context) => {
-  const { orgId } = context
-  return Segment.getAllByOrgIdAndSlugs(orgId, slugs)
-    .then((segments) => {
-      segments = _.keyBy(segments, 'slug')
-      return _.map(slugs, slug => segments[slug])
-    })
-})
+// const segmentLoaderFn = Loader.withContext(async (slugs, context) => {
+//   const { orgId } = context
+//   return Segment.getAllByOrgIdAndSlugs(orgId, slugs)
+//     .then((segments) => {
+//       segments = _.keyBy(segments, 'slug')
+//       return _.map(slugs, slug => segments[slug])
+//     })
+// })
 
 export default {
   Dimension: {
-    datapoints: async (dimension, { segmentSlug, hackPw, startDate, endDate, timeScale }, context) => {
+    datapoints: async (dimension, { segmentId, hackPw, startDate, endDate, timeScale }, context) => {
       const loader = datapointLoaderFn(context)
       const metric = dimension._metric
       const block = metric._block
 
-      let segmentId
-      if (segmentSlug) {
-        const contextWithOrgId = _.defaults({ orgId: metric.orgId }, context)
-        const segment = await segmentLoaderFn(contextWithOrgId).load(segmentSlug)
-        segmentId = segment?.id
-      }
+      // let segmentId
+      // if (segmentSlug) {
+      //   const contextWithOrgId = _.defaults({ orgId: metric.orgId }, context)
+      //   const segment = await segmentLoaderFn(contextWithOrgId).load(segmentSlug)
+      //   segmentId = segment?.id
+      // }
       segmentId = segmentId || cknex.emptyUuid
 
       if (block?.settings.type === 'us-map' || block?.settings.dimensionId) {

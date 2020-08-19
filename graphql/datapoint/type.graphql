@@ -13,7 +13,7 @@ type DatapointConnection {
 
 extend type Dimension {
   datapoints(
-    segmentSlug: String
+    segmentId: ID
     startDate: String
     endDate: String
     timeScale: String

@@ -10,7 +10,6 @@ class BlockModel extends Base {
           id: 'timeuuid',
           slug: 'text',
           name: 'text',
-          dashboardId: 'uuid',
           metricIds: 'json', // [{id: <metric id>}], flexible for other settings
           orgId: 'uuid',
           settings: 'json'
@@ -25,22 +24,16 @@ class BlockModel extends Base {
               partitionKey: ['slug'],
               clusteringColumns: ['id']
             }
-          },
-          blocks_by_dashboardId: {
-            primaryKey: {
-              partitionKey: ['dashboardId'],
-              clusteringColumns: ['id']
-            }
           }
         }
       }
     ]
   }
 
-  getAllByDashboardId (dashboardId) {
+  getAllByIds (ids) {
     return cknex().select('*')
-      .from('blocks_by_dashboardId')
-      .where('dashboardId', '=', dashboardId)
+      .from('blocks_by_id')
+      .where('id', 'IN', ids)
       .run()
       .map(this.defaultOutput)
   }

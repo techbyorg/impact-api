@@ -1,28 +1,24 @@
 import _ from 'lodash'
-import { GraphqlFormatter } from 'backend-shared'
+import Promise from 'bluebird'
+import { GraphqlFormatter, Loader } from 'backend-shared'
 
 import Block from './model.js'
-import config from '../../config.js'
+
+const blockLoaderFn = Loader.withContext(async (ids, context) => {
+  return Block.getAllByIds(ids)
+    .then((blocks) => {
+      blocks = _.keyBy(blocks, 'id')
+      return _.map(ids, id => blocks[id])
+    })
+})
 
 export default {
-  Query: {
-    blocks: async (rootValue, { dashboardId, hackPw }) => {
-      return Block.getAllByDashboardId(dashboardId)
-        .then((blocks) => {
-          if (hackPw === config.UPCHIEVE_HACK_PASS) {
-            return blocks
-          } else {
-            return _.filter(blocks, ({ settings }) => !settings?.isPrivate)
-          }
-        })
-        .then(GraphqlFormatter.fromScylla)
-    }
-  },
-
   Dashboard: {
-    blocks: (dashboard, { limit }) => {
-      return Block.getAllByDashboardId(dashboard.id)
-        .then((blocks) => _.filter(blocks, ({ settings }) => !settings?.isPrivate))
+    blocks: (dashboard, { limit }, context) => {
+      return Promise.map(dashboard.blockIds, (blockId) =>
+        blockLoaderFn(context).load(blockId)
+      )
+        .then((blocks) => _.filter(blocks, (block) => block && !block.settings?.isPrivate))
         .then(GraphqlFormatter.fromScylla)
     }
   }
