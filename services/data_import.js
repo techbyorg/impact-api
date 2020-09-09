@@ -45,12 +45,8 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
       // legacy fix
       if (datapoint.scaledTime === 'ALL') { datapoint.scaledTime = 'ALL:ALL' }
 
-      // legacy fix
-      if (!datapoint.scaledTime) {
-        console.log(datapoint)
-      }
       const timeScalePrefix = datapoint.scaledTime.match(/([A-Z]+):/)[1]
-      const timeScale = timeScalePrefix === 'All'
+      const timeScale = timeScalePrefix === 'ALL'
         ? 'all'
         : timeScalePrefix === 'DAY'
           ? 'day'
@@ -63,6 +59,9 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
                 : timeScalePrefix === 'YR'
                   ? 'year'
                   : 'minute'
+      if (timeScale === 'minute') {
+        console.log('min', timeScalePrefix, datapoint)
+      }
 
       let dimensionId
       if (datapoint.dimensionSlug === 'all') {
@@ -126,12 +125,16 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
     // console.log('exist', existingDatapoints)
     return Promise.map(metricDatapoints, (datapoint) => {
       const existingDatapoint = _.find(existingDatapoints, _.omit(datapoint, 'count'))
-      if (existingDatapoint && Math.abs(datapoint.count - existingDatapoint.count)) {
+      if (existingDatapoint) {
+        const isChanged = Boolean(Math.abs(datapoint.count - existingDatapoint.count))
+        if (!isChanged) {
+          return
+        }
         datapoint = _.defaults({ count: datapoint.count - existingDatapoint.count }, datapoint)
-      // }
-      } else if (!existingDatapoint) {
-        console.log('no exist', datapoint)
       }
+      // } else if (!existingDatapoint) {
+      //   console.log('no exist', datapoint)
+      // }
       if (incrementAll && datapoint) {
         return Datapoint.incrementAllTimeScales(_.omit(datapoint, 'count'), datapoint.count)
       } else if (datapoint) {
@@ -143,14 +146,14 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
   // console.log('seg', _.filter(datapoints, { segmentId: 'c373ae96-d752-11ea-9abd-8d089f03a8e8' }))
 }
 
-// importDatapoints({ startDate: '2020-08-05', endDate: '2020-08-05', timeScale: 'day', incrementAll: true })
+// importDatapoints({ startDate: '2020-09-06', endDate: '2020-09-08', timeScale: 'day', incrementAll: true })
 // importDatapoints({ startDate: '2020-08-01', endDate: '2020-08-11', timeScale: 'day' })
 // single run import:
 // Promise.each([
-//   { startDate: '2018-01-01', endDate: '2020-08-11', timeScale: 'month' },
-//   { startDate: '2018-01-01', endDate: '2020-08-11', timeScale: 'week' },
-//   { startDate: '2018-01-01', endDate: '2020-08-11', timeScale: 'day' },
-//   { startDate: '2018-01-01', endDate: '2020-08-11', timeScale: 'all' }
+//   { startDate: '2018-01-01', endDate: '2020-08-21', timeScale: 'month' },
+//   { startDate: '2018-01-01', endDate: '2020-08-21', timeScale: 'week' },
+//   { startDate: '2018-01-01', endDate: '2020-08-21', timeScale: 'day' },
+//   { startDate: '2018-01-01', endDate: '2020-08-21', timeScale: 'all' }
 // ], importDatapoints)
 
 async function getUpchieveMetrics ({ startDate, endDate, timeScale = 'day' }) {
@@ -176,23 +179,8 @@ async function getUpchieveMetrics ({ startDate, endDate, timeScale = 'day' }) {
       return _.defaults({ dimensionSlug, dimensionValue }, datapoint)
     }))
 
-    // FIXME: rm true when upchieve fix merged in
-    if (true || metric.slug === 'students') {
-      // FIXME: rm when upchieve fix merged in
-      const fixedDatapoints = _.map(metric.datapoints, (datapoint) => {
-        const timeScalePrefix = datapoint.scaledTime.match(/([A-Z]+):/)[1]
-        if (timeScalePrefix === 'MIN') {
-          const date = Time.scaledTimeToUTC(datapoint.scaledTime)
-          const scaledTime = Time.getScaledTimeByTimeScale(timeScale, date, 'America/Chicago')
-          // console.log(datapoint.scaledTime, scaledTime)
-          return _.defaults({ scaledTime }, datapoint)
-        } else {
-          return datapoint
-        }
-      })
-      // end FIXME
-
-      const datapointsByDimensionValue = _.groupBy(fixedDatapoints, ({ segmentSlug, scaledTime, dimensionSlug, dimensionValue }) =>
+    if (metric.slug === 'students') {
+      const datapointsByDimensionValue = _.groupBy(metric.datapoints, ({ segmentSlug, scaledTime, dimensionSlug, dimensionValue }) =>
         `${segmentSlug}:${scaledTime}:${dimensionSlug}:${dimensionValue}`
       )
       metric.datapoints = _.map(datapointsByDimensionValue, (datapoints) => {

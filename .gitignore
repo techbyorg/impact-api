@@ -3,3 +3,4 @@ npm-debug.log
 /coverage
 /misc_scripts
 notes
+/scripts/*.csv

@@ -9,7 +9,7 @@ class CronService extends Cron {
     super()
 
     // hourly (at 16 min 30s every hour)
-    this.addCron('hour', '30 56 * * * *', () => {
+    this.addCron('hour', '30 16 * * * *', () => {
       console.log('cron')
       if (config.ENV === config.ENVS.PROD) {
         const todayDate = moment().format('YYYY-MM-DD')
