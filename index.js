@@ -12,6 +12,7 @@ import { fileURLToPath } from 'url'
 import { getApiKey, Schema } from 'backend-shared'
 
 import * as directives from './graphql/directives.js'
+import HealthService from './services/health.js'
 import { setup, childSetup } from './services/setup.js'
 import config from './config.js'
 
@@ -34,6 +35,9 @@ app.use(bodyParser.json({ limit: '1mb' }))
 app.use(bodyParser.json({ type: 'text/plain', limit: '1mb' }))
 
 app.get('/', (req, res) => res.status(200).send('ok'))
+
+app.get('/healthcheck', HealthService.check)
+app.get('/healthcheck/throw', HealthService.checkThrow)
 
 const serverPromise = schemaPromise.then((schema) => {
   const { typeDefs, resolvers, schemaDirectives } = schema
