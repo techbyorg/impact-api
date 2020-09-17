@@ -5,7 +5,7 @@ import Dashboard from '../graphql/dashboard/model.js'
 
 const HEALTHCHECK_TIMEOUT = 40000
 const HEALTHCHECK_THROW_TIMEOUT = 40000
-const UPCHIEVE_DASHBOARD_ID = '87e9dec6-e009-11ea-af5f-ebaacc040fe2'
+const UPCHIEVE_DASHBOARD_ID = 'bdbe6310-bb45-11ea-8279-c32478148665'
 const UPCHIEVE_ORG_ID = 'b6295100-bb45-11ea-91c2-9d708da068b3'
 
 class HealthService {
@@ -36,7 +36,7 @@ class HealthService {
     return Promise.all([
       Promise.resolve(Dashboard.getAllByOrgId(UPCHIEVE_ORG_ID))
         .timeout(timeout)
-        .catch(() => null)
+        .catch((err) => console.log(err))
     ])
       .then(function (responses) {
         const [dashboards] = responses
