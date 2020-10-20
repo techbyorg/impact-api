@@ -28,39 +28,39 @@ setup().then(() => {
   const ORG_ID = 'b6295100-bb45-11ea-91c2-9d708da068b3'
 
   const dashboards = [
-    {
-      id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2',
-      slug: 'student-partner-dashboard',
-      name: 'Student Partner Dashboard',
-      blockIds: [
-        '0dd9e4f0-bb46-11ea-a3e0-dbf3bf48d9f8', // sessions
-        'b57ca070-bd6d-11ea-b11b-51f5b01276d4', // sessions day of week
-        '9c366280-bd73-11ea-b87c-964ef1776e0c', // sessions hour of day
-        'd62c7d30-bd73-11ea-afd8-6c48e6ae38f1', // sessions topic
-        '4e527bf0-bd85-11ea-9545-2467677d7f85', // sessions subtopic
-        'e6ff8590-bbe2-11ea-b2e2-0a394ea8916e', // new students
-        '0cf1e6e0-bcaf-11ea-9d68-f0e5274248a0', // avg session duration
-        'dea177f0-bcc3-11ea-b87c-9c5d694346f5', // chat messages per session
-        '31f4fbc0-bbf2-11ea-9187-16827e258c82' // overview
-      ],
-      orgId: ORG_ID
-    },
-    {
-      id: '87e9dec5-e009-11ea-8a77-f56702a1dfae',
-      slug: 'volunteer-partner-dashboard',
-      name: 'Volunteer Partner Dashboard',
-      blockIds: [
-        '0dd9e4f0-bb46-11ea-a3e0-dbf3bf48d9f8', // sessions
-        'b57ca070-bd6d-11ea-b11b-51f5b01276d4', // sessions day of week
-        '9c366280-bd73-11ea-b87c-964ef1776e0c', // sessions hour of day
-        'd62c7d30-bd73-11ea-afd8-6c48e6ae38f1', // sessions topic
-        '4e527bf0-bd85-11ea-9545-2467677d7f85', // sessions subtopic
-        'c18b1040-bcaa-11ea-a644-bfdddfa3ff85', // new volunteers
-        '0cf1e6e0-bcaf-11ea-9d68-f0e5274248a0', // avg session duration
-        'dea177f0-bcc3-11ea-b87c-9c5d694346f5' // chat messages per session
-      ],
-      orgId: ORG_ID
-    },
+    // {
+    //   id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2',
+    //   slug: 'student-partner-dashboard',
+    //   name: 'Student Partner Dashboard',
+    //   blockIds: [
+    //     '0dd9e4f0-bb46-11ea-a3e0-dbf3bf48d9f8', // sessions
+    //     'b57ca070-bd6d-11ea-b11b-51f5b01276d4', // sessions day of week
+    //     '9c366280-bd73-11ea-b87c-964ef1776e0c', // sessions hour of day
+    //     'd62c7d30-bd73-11ea-afd8-6c48e6ae38f1', // sessions topic
+    //     '4e527bf0-bd85-11ea-9545-2467677d7f85', // sessions subtopic
+    //     'e6ff8590-bbe2-11ea-b2e2-0a394ea8916e', // new students
+    //     '0cf1e6e0-bcaf-11ea-9d68-f0e5274248a0', // avg session duration
+    //     'dea177f0-bcc3-11ea-b87c-9c5d694346f5', // chat messages per session
+    //     '31f4fbc0-bbf2-11ea-9187-16827e258c82' // overview
+    //   ],
+    //   orgId: ORG_ID
+    // },
+    // {
+    //   id: '87e9dec5-e009-11ea-8a77-f56702a1dfae',
+    //   slug: 'volunteer-partner-dashboard',
+    //   name: 'Volunteer Partner Dashboard',
+    //   blockIds: [
+    //     '0dd9e4f0-bb46-11ea-a3e0-dbf3bf48d9f8', // sessions
+    //     'b57ca070-bd6d-11ea-b11b-51f5b01276d4', // sessions day of week
+    //     '9c366280-bd73-11ea-b87c-964ef1776e0c', // sessions hour of day
+    //     'd62c7d30-bd73-11ea-afd8-6c48e6ae38f1', // sessions topic
+    //     '4e527bf0-bd85-11ea-9545-2467677d7f85', // sessions subtopic
+    //     'c18b1040-bcaa-11ea-a644-bfdddfa3ff85', // new volunteers
+    //     '0cf1e6e0-bcaf-11ea-9d68-f0e5274248a0', // avg session duration
+    //     'dea177f0-bcc3-11ea-b87c-9c5d694346f5' // chat messages per session
+    //   ],
+    //   orgId: ORG_ID
+    // },
     {
       id: 'bdbe6310-bb45-11ea-8279-c32478148665',
       slug: 'high-level-metrics',
@@ -74,6 +74,8 @@ setup().then(() => {
         'e6ff8590-bbe2-11ea-b2e2-0a394ea8916e', // new students
         '27a2a290-bf20-11ea-9bb6-7e3b94970fe7', // student states
         '31f4fbc0-bbf2-11ea-9187-16827e258c82', // overview
+        'a813e990-126b-11eb-ae14-d9ff394f936d', // total sessions
+        'd18631a0-126d-11eb-b40c-0dd76e8a1756' // total students
       ],
       orgId: ORG_ID
     },
@@ -117,10 +119,22 @@ setup().then(() => {
       orgId: ORG_ID
     },
     {
+      id: '4d198d60-1261-11eb-aeb3-485f25c50202',
+      slug: 'cumulative-sessions',
+      name: 'Total Sessions',
+      orgId: ORG_ID
+    },
+    {
       id: 'ddcb9090-bbe2-11ea-a5d2-127f741e4157',
       slug: 'students',
       name: 'New students',
       dimensionIds: ['78d28e60-bee3-11ea-aef6-04f7769e2c92'],
+      orgId: ORG_ID
+    },
+    {
+      id: 'dd402bb0-1261-11eb-9de7-aac992b4b524',
+      slug: 'cumulative-students',
+      name: 'Total Students',
       orgId: ORG_ID
     },
 
@@ -354,6 +368,26 @@ setup().then(() => {
       slug: 'sessions',
       name: 'Sessions',
       metricIds: [{ id: '9285d290-bb46-11ea-afef-2f1fddc92f4e' }],
+      dashboardId: 'bdbe6310-bb45-11ea-8279-c32478148665',
+      settings: {
+        type: 'line'
+      }
+    },
+    {
+      id: 'a813e990-126b-11eb-ae14-d9ff394f936d',
+      slug: 'cumulative-sessions',
+      name: 'Total sessions',
+      metricIds: [{ id: '4d198d60-1261-11eb-aeb3-485f25c50202' }],
+      dashboardId: 'bdbe6310-bb45-11ea-8279-c32478148665',
+      settings: {
+        type: 'line'
+      }
+    },
+    {
+      id: 'd18631a0-126d-11eb-b40c-0dd76e8a1756',
+      slug: 'cumulative-students',
+      name: 'Total students',
+      metricIds: [{ id: 'dd402bb0-1261-11eb-9de7-aac992b4b524' }],
       dashboardId: 'bdbe6310-bb45-11ea-8279-c32478148665',
       settings: {
         type: 'line'

@@ -135,7 +135,8 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
       // } else if (!existingDatapoint) {
       //   console.log('no exist', datapoint)
       // }
-      if (incrementAll && datapoint) {
+      const isCumulative = ['cumulative-sessions', 'cumulative-students'].includes(slug)
+      if (incrementAll && !isCumulative && datapoint) {
         return Datapoint.incrementAllTimeScales(_.omit(datapoint, 'count'), datapoint.count)
       } else if (datapoint) {
         return Datapoint.increment(_.omit(datapoint, 'count'), datapoint.count)
@@ -147,7 +148,7 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
 }
 
 // importDatapoints({ startDate: '2020-09-06', endDate: '2020-09-08', timeScale: 'day', incrementAll: true })
-// importDatapoints({ startDate: '2020-08-01', endDate: '2020-08-11', timeScale: 'day' })
+// importDatapoints({ startDate: '2020-08-01', endDate: '2020-08-11', timeScale: 'day', incrementAll: true })
 // single run import:
 // Promise.each([
 //   { startDate: '2018-01-01', endDate: '2020-08-21', timeScale: 'month' },
@@ -163,6 +164,7 @@ async function getUpchieveMetrics ({ startDate, endDate, timeScale = 'day' }) {
     // `http://localhost:3000/metrics?minTime=${startDate}&maxTime=${endDate}&timeScale=${timeScale}`
     , { json: true }
   )
+  // console.log('metrics', JSON.stringify(metrics, null, 2))
   metrics = _.map(metrics, (metric) => {
     metric.datapoints = _.filter(_.map(metric.datapoints, (datapoint) => {
       const dimensionSlug = datapoint.dimensionSlug === 'zip'
