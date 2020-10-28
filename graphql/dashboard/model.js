@@ -50,6 +50,14 @@ class DashboardModel extends Base {
       .run({ isSingle: true })
       .then(this.defaultOutput)
   }
+
+  getById (id) {
+    return cknex().select('*')
+      .from('dashboards_by_id')
+      .where('id', '=', id)
+      .run({ isSingle: true })
+      .then(this.defaultOutput)
+  }
 }
 
 export default new DashboardModel()

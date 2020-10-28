@@ -9,8 +9,10 @@ export default {
         .then(GraphqlFormatter.fromScylla)
     },
 
-    dashboard: async (rootValue, { orgId, slug }) => {
-      if (slug) {
+    dashboard: async (rootValue, { id, orgId, slug }) => {
+      if (id) {
+        return Dashboard.getById(id)
+      } else if (slug) {
         return Dashboard.getByOrgIdAndSlug(orgId, slug)
       } else {
         const dashboards = await Dashboard.getAllByOrgId(orgId)

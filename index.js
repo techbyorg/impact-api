@@ -12,6 +12,7 @@ import { fileURLToPath } from 'url'
 import { getApiKey, Schema } from 'backend-shared'
 
 import * as directives from './graphql/directives.js'
+import { emailVariablesRoute } from './services/email.js'
 import HealthService from './services/health.js'
 import { setup, childSetup } from './services/setup.js'
 import config from './config.js'
@@ -39,14 +40,18 @@ app.get('/', (req, res) => res.status(200).send('ok'))
 app.get('/healthcheck', HealthService.check)
 app.get('/healthcheck/throw', HealthService.checkThrow)
 
+app.post('/emailVariables', emailVariablesRoute)
+
+let globalSchema
+
 const serverPromise = schemaPromise.then((schema) => {
   const { typeDefs, resolvers, schemaDirectives } = schema
-  schema = buildFederatedSchema({ typeDefs, resolvers })
+  globalSchema = buildFederatedSchema({ typeDefs, resolvers })
   // https://github.com/apollographql/apollo-feature-requests/issues/145
-  SchemaDirectiveVisitor.visitSchemaDirectives(schema, schemaDirectives)
+  SchemaDirectiveVisitor.visitSchemaDirectives(globalSchema, schemaDirectives)
 
   const graphqlServer = new ApolloServer({
-    schema,
+    schema: globalSchema,
     context: async ({ req }) => {
       let org, apiKey
       if (req.headers.authorization) {
@@ -62,4 +67,4 @@ const serverPromise = schemaPromise.then((schema) => {
   return http.createServer(app)
 })
 
-export { serverPromise, setup, childSetup }
+export { serverPromise, setup, childSetup, globalSchema }

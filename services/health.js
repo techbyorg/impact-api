@@ -31,8 +31,7 @@ class HealthService {
       })
   }
 
-  getStatus ({ timeout } = {}) {
-    if (timeout == null) { timeout = HEALTHCHECK_TIMEOUT }
+  getStatus ({ timeout = HEALTHCHECK_TIMEOUT } = {}) {
     return Promise.all([
       Promise.resolve(Dashboard.getAllByOrgId(UPCHIEVE_ORG_ID))
         .timeout(timeout)

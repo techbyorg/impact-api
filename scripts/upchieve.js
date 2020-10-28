@@ -890,16 +890,16 @@ setup().then(() => {
     }
   ]
 
-  Promise.all([
-    Dashboard.batchUpsert(dashboards),
-    Dimension.batchUpsert(dimensions),
-    Metric.batchUpsert(metrics),
-    Block.batchUpsert(blocks),
-    Segment.batchUpsert(segments),
-    Partner.batchUpsert(partners)
-  ]).then(() => {
-    console.log('done')
-  })
+  // Promise.all([
+  //   Dashboard.batchUpsert(dashboards),
+  //   Dimension.batchUpsert(dimensions),
+  //   Metric.batchUpsert(metrics),
+  //   Block.batchUpsert(blocks),
+  //   Segment.batchUpsert(segments),
+  //   Partner.batchUpsert(partners)
+  // ]).then(() => {
+  //   console.log('done')
+  // })
 
   // datapoints fetched from upchieve mongo for now...
 })

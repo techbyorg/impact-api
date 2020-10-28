@@ -2,6 +2,7 @@ import moment from 'moment-timezone'
 import { Cron } from 'backend-shared'
 
 import config from '../config.js'
+// import { sendDailyEmails } from './email.js'
 import { importDatapoints } from './data_import.js'
 
 class CronService extends Cron {
