@@ -33,15 +33,15 @@ setup().then(() => {
     //   slug: 'student-partner-dashboard',
     //   name: 'Student Partner Dashboard',
     //   blockIds: [
-    //     '0dd9e4f0-bb46-11ea-a3e0-dbf3bf48d9f8', // sessions
-    //     'b57ca070-bd6d-11ea-b11b-51f5b01276d4', // sessions day of week
-    //     '9c366280-bd73-11ea-b87c-964ef1776e0c', // sessions hour of day
-    //     'd62c7d30-bd73-11ea-afd8-6c48e6ae38f1', // sessions topic
-    //     '4e527bf0-bd85-11ea-9545-2467677d7f85', // sessions subtopic
-    //     'e6ff8590-bbe2-11ea-b2e2-0a394ea8916e', // new students
-    //     '0cf1e6e0-bcaf-11ea-9d68-f0e5274248a0', // avg session duration
-    //     'dea177f0-bcc3-11ea-b87c-9c5d694346f5', // chat messages per session
-    //     '31f4fbc0-bbf2-11ea-9187-16827e258c82' // overview
+    //     { id: '0dd9e4f0-bb46-11ea-a3e0-dbf3bf48d9f8' }, // sessions
+    //     { id: 'b57ca070-bd6d-11ea-b11b-51f5b01276d4' }, // sessions day of week
+    //     { id: '9c366280-bd73-11ea-b87c-964ef1776e0c' }, // sessions hour of day
+    //     { id: 'd62c7d30-bd73-11ea-afd8-6c48e6ae38f1' }, // sessions topic
+    //     { id: '4e527bf0-bd85-11ea-9545-2467677d7f85' }, // sessions subtopic
+    //     { id: 'e6ff8590-bbe2-11ea-b2e2-0a394ea8916e' }, // new students
+    //     { id: '0cf1e6e0-bcaf-11ea-9d68-f0e5274248a0' }, // avg session duration
+    //     { id: 'dea177f0-bcc3-11ea-b87c-9c5d694346f5' }, // chat messages per session
+    //     { id: '31f4fbc0-bbf2-11ea-9187-16827e258c82' } // overview
     //   ],
     //   orgId: ORG_ID
     // },
@@ -50,14 +50,14 @@ setup().then(() => {
     //   slug: 'volunteer-partner-dashboard',
     //   name: 'Volunteer Partner Dashboard',
     //   blockIds: [
-    //     '0dd9e4f0-bb46-11ea-a3e0-dbf3bf48d9f8', // sessions
-    //     'b57ca070-bd6d-11ea-b11b-51f5b01276d4', // sessions day of week
-    //     '9c366280-bd73-11ea-b87c-964ef1776e0c', // sessions hour of day
-    //     'd62c7d30-bd73-11ea-afd8-6c48e6ae38f1', // sessions topic
-    //     '4e527bf0-bd85-11ea-9545-2467677d7f85', // sessions subtopic
-    //     'c18b1040-bcaa-11ea-a644-bfdddfa3ff85', // new volunteers
-    //     '0cf1e6e0-bcaf-11ea-9d68-f0e5274248a0', // avg session duration
-    //     'dea177f0-bcc3-11ea-b87c-9c5d694346f5' // chat messages per session
+    //     { id: '0dd9e4f0-bb46-11ea-a3e0-dbf3bf48d9f8' }, // sessions
+    //     { id: 'b57ca070-bd6d-11ea-b11b-51f5b01276d4' }, // sessions day of week
+    //     { id: '9c366280-bd73-11ea-b87c-964ef1776e0c' }, // sessions hour of day
+    //     { id: 'd62c7d30-bd73-11ea-afd8-6c48e6ae38f1' }, // sessions topic
+    //     { id: '4e527bf0-bd85-11ea-9545-2467677d7f85' }, // sessions subtopic
+    //     { id: 'c18b1040-bcaa-11ea-a644-bfdddfa3ff85' }, // new volunteers
+    //     { id: '0cf1e6e0-bcaf-11ea-9d68-f0e5274248a0' }, // avg session duration
+    //     { id: 'dea177f0-bcc3-11ea-b87c-9c5d694346f5' } // chat messages per session
     //   ],
     //   orgId: ORG_ID
     // },
@@ -66,16 +66,16 @@ setup().then(() => {
       slug: 'high-level-metrics',
       name: 'High level metrics',
       blockIds: [
-        '0dd9e4f0-bb46-11ea-a3e0-dbf3bf48d9f8', // sessions
-        'b57ca070-bd6d-11ea-b11b-51f5b01276d4', // sessions day of week
-        '9c366280-bd73-11ea-b87c-964ef1776e0c', // sessions hour of day
-        'd62c7d30-bd73-11ea-afd8-6c48e6ae38f1', // sessions topic
-        '4e527bf0-bd85-11ea-9545-2467677d7f85', // sessions subtopic
-        'e6ff8590-bbe2-11ea-b2e2-0a394ea8916e', // new students
-        '27a2a290-bf20-11ea-9bb6-7e3b94970fe7', // student states
-        '31f4fbc0-bbf2-11ea-9187-16827e258c82', // overview
-        'a813e990-126b-11eb-ae14-d9ff394f936d', // total sessions
-        'd18631a0-126d-11eb-b40c-0dd76e8a1756' // total students
+        { id: '0dd9e4f0-bb46-11ea-a3e0-dbf3bf48d9f8' }, // sessions
+        { id: 'b57ca070-bd6d-11ea-b11b-51f5b01276d4' }, // sessions day of week
+        { id: '9c366280-bd73-11ea-b87c-964ef1776e0c' }, // sessions hour of day
+        { id: 'd62c7d30-bd73-11ea-afd8-6c48e6ae38f1' }, // sessions topic
+        { id: '4e527bf0-bd85-11ea-9545-2467677d7f85' }, // sessions subtopic
+        { id: 'e6ff8590-bbe2-11ea-b2e2-0a394ea8916e' }, // new students
+        { id: '27a2a290-bf20-11ea-9bb6-7e3b94970fe7' }, // student states
+        { id: '31f4fbc0-bbf2-11ea-9187-16827e258c82' }, // overview
+        { id: 'a813e990-126b-11eb-ae14-d9ff394f936d' }, // total sessions
+        { id: 'd18631a0-126d-11eb-b40c-0dd76e8a1756' } // total students
       ],
       orgId: ORG_ID
     },
@@ -84,12 +84,12 @@ setup().then(() => {
       slug: 'volunteers',
       name: 'Volunteers',
       blockIds: [
-        '0f070810-bcab-11ea-bf4c-d4221f6eef95', // new volunteers
-        '610a0ea0-bcab-11ea-8996-4b0c569ecccb', // onboarded volunteers
-        '83689b90-be0b-11ea-8025-82bda63d6893', // certified volunteers
-        '47b78d20-bcdc-11ea-89ba-7b84cbe980a7', // volunteer overview
-        'b41ad9d0-d3a3-11ea-b273-df031a81f9e4', // volunteer overview internal
-        'beda0670-be1d-11ea-9e09-84299b0f73ec' // volunteer onboard percent
+        { id: '0f070810-bcab-11ea-bf4c-d4221f6eef95' }, // new volunteers
+        { id: '610a0ea0-bcab-11ea-8996-4b0c569ecccb' }, // onboarded volunteers
+        { id: '83689b90-be0b-11ea-8025-82bda63d6893' }, // certified volunteers
+        { id: '47b78d20-bcdc-11ea-89ba-7b84cbe980a7' }, // volunteer overview
+        { id: 'b41ad9d0-d3a3-11ea-b273-df031a81f9e4' }, // volunteer overview internal
+        { id: 'beda0670-be1d-11ea-9e09-84299b0f73ec' } // volunteer onboard percent
       ],
       orgId: ORG_ID
     },
@@ -98,14 +98,49 @@ setup().then(() => {
       slug: 'sessions',
       name: 'Sessions',
       blockIds: [
+        { id: '0cf1e6e0-bcaf-11ea-9d68-f0e5274248a0' }, // avg session duration
+        { id: '6aaaab50-bcaf-11ea-a9c1-032a03f3ac0f' }, // avg session wait
+        { id: 'fd870b10-bcc0-11ea-a79f-685bbc557379' }, // avg match rate
+        { id: 'dea177f0-bcc3-11ea-b87c-9c5d694346f5' }, // chat messages per session
+        { id: '52c3c690-bcc6-11ea-83f7-49a342e449fa' }, // session rating by topic
+        { id: '59232540-bd6a-11ea-b56d-2114b4271b67' }, // session rating subtopic
+        { id: 'a03dc5c0-bcca-11ea-b738-2b9c548db971' } // session overview
+      ],
+      orgId: ORG_ID
+    },
+    {
+      id: 'bcce88b0-1967-11eb-a8b3-def5c40b732a',
+      slug: 'daily-overview', // daily email
+      name: 'Daily overview',
+      settings: { isPrivate: true },
+      sections: [
+        { name: 'Session stats' },
+        { name: 'Student stats' },
+        { name: 'Volunteer stats' },
+        { name: 'Total stats' }
+      ],
+      blockIds: [
+        // session stats
+        { id: '0dd9e4f0-bb46-11ea-a3e0-dbf3bf48d9f8', sectionIndex: 0 }, // sessions
+        { id: 'fd870b10-bcc0-11ea-a79f-685bbc557379', sectionIndex: 0 }, // avg match rate
+        { id: '0cf1e6e0-bcaf-11ea-9d68-f0e5274248a0', sectionIndex: 0 }, // avg session duration
+        { id: '6aaaab50-bcaf-11ea-a9c1-032a03f3ac0f', sectionIndex: 0 }, // avg session wait
+        { id: 'd8ebb7c0-bcc4-11ea-a21d-b27049928be6', sectionIndex: 0 }, // avg session rating
 
-        '0cf1e6e0-bcaf-11ea-9d68-f0e5274248a0', // avg session duration
-        '6aaaab50-bcaf-11ea-a9c1-032a03f3ac0f', // avg session wait
-        'fd870b10-bcc0-11ea-a79f-685bbc557379', // avg match rate
-        'dea177f0-bcc3-11ea-b87c-9c5d694346f5', // chat messages per session
-        '52c3c690-bcc6-11ea-83f7-49a342e449fa', // session rating by topic
-        '59232540-bd6a-11ea-b56d-2114b4271b67', // session rating subtopic
-        'a03dc5c0-bcca-11ea-b738-2b9c548db971' // session overview
+        // students
+        { id: 'e6ff8590-bbe2-11ea-b2e2-0a394ea8916e', sectionIndex: 1 }, // new students
+        // { id: '', sectionIndex: 1 }, // % of new students from partner orgs
+        // { id: '', sectionIndex: 1 }, // % of new students who made a request
+
+        // volunteers
+        { id: '0f070810-bcab-11ea-bf4c-d4221f6eef95', sectionIndex: 2 }, // new volunteers
+        { id: '610a0ea0-bcab-11ea-8996-4b0c569ecccb', sectionIndex: 2 }, // onboarded volunteers
+        // { id: '', sectionIndex: 2 }, // % of new volunteers from partner companies
+
+        // totals
+        { id: 'a813e990-126b-11eb-ae14-d9ff394f936d', sectionIndex: 3 }, // total sessions
+        { id: 'd18631a0-126d-11eb-b40c-0dd76e8a1756', sectionIndex: 3 } // total students
+        // { id: '', sectionIndex: 3 } // total onboarded volunteers
       ],
       orgId: ORG_ID
     }
@@ -890,16 +925,16 @@ setup().then(() => {
     }
   ]
 
-  // Promise.all([
-  //   Dashboard.batchUpsert(dashboards),
-  //   Dimension.batchUpsert(dimensions),
-  //   Metric.batchUpsert(metrics),
-  //   Block.batchUpsert(blocks),
-  //   Segment.batchUpsert(segments),
-  //   Partner.batchUpsert(partners)
-  // ]).then(() => {
-  //   console.log('done')
-  // })
+  Promise.all([
+    Dashboard.batchUpsert(dashboards),
+    Dimension.batchUpsert(dimensions),
+    Metric.batchUpsert(metrics),
+    Block.batchUpsert(blocks),
+    Segment.batchUpsert(segments),
+    Partner.batchUpsert(partners)
+  ]).then(() => {
+    console.log('done')
+  })
 
   // datapoints fetched from upchieve mongo for now...
 })

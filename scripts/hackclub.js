@@ -18,16 +18,16 @@ setup().then(() => {
       slug: 'slack',
       name: 'Slack',
       blockIds: [
-        'a6bdb660-c3b1-11ea-a4d3-7e9f6ddde46e', // messages
-        '02d7ed40-c537-11ea-b233-93ba5f7083a1', // messages by type
-        '74a0b150-c582-11ea-80c4-aaa7ec4773c4', // active users
-        '03977740-c538-11ea-8129-3648352cafaf', // new members
-        'a8edab10-c538-11ea-b52f-249a6d1988bb', // new users
-        '9de493c0-c5ef-11ea-9cd3-c5540c23df8c', // guest conv rate
-        'a5a374f0-c5ef-11ea-b7d5-05de93dc6f26', // messages per active user
-        '450f7c00-c5fa-11ea-a26d-654a4f2e9697', // w1 retention
-        '10277230-c62d-11ea-92dd-fa548e0c1a8c', // days until promoted
-        '6de01380-c6c5-11ea-9eed-2515329376ba' // slack overview
+        { id: 'a6bdb660-c3b1-11ea-a4d3-7e9f6ddde46e' }, // messages
+        { id: '02d7ed40-c537-11ea-b233-93ba5f7083a1' }, // messages by type
+        { id: '74a0b150-c582-11ea-80c4-aaa7ec4773c4' }, // active users
+        { id: '03977740-c538-11ea-8129-3648352cafaf' }, // new members
+        { id: 'a8edab10-c538-11ea-b52f-249a6d1988bb' }, // new users
+        { id: '9de493c0-c5ef-11ea-9cd3-c5540c23df8c' }, // guest conv rate
+        { id: 'a5a374f0-c5ef-11ea-b7d5-05de93dc6f26' }, // messages per active user
+        { id: '450f7c00-c5fa-11ea-a26d-654a4f2e9697' }, // w1 retention
+        { id: '10277230-c62d-11ea-92dd-fa548e0c1a8c' }, // days until promoted
+        { id: '6de01380-c6c5-11ea-9eed-2515329376ba' } // slack overview
 
       ],
       orgId: ORG_ID,
@@ -39,9 +39,9 @@ setup().then(() => {
       name: 'Bank',
       orgId: ORG_ID,
       blockIds: [
-        '5c8ad0b0-cd15-11ea-92f2-4544eddaa1b1', // transactions
-        '6579f480-cd15-11ea-b575-6d6b1e77276a', // transactions volume
-        '6ae8cb30-cd15-11ea-a408-26a0e8226ec6' // money raised
+        { id: '5c8ad0b0-cd15-11ea-92f2-4544eddaa1b1' }, // transactions
+        { id: '6579f480-cd15-11ea-b575-6d6b1e77276a' }, // transactions volume
+        { id: '6ae8cb30-cd15-11ea-a408-26a0e8226ec6' } // money raised
       ],
       displayOrder: 1
     }
@@ -151,7 +151,7 @@ setup().then(() => {
       name: 'Money raised',
       orgId: ORG_ID,
       unit: 'cents'
-    },
+    }
   ]
 
   const dimensions = [

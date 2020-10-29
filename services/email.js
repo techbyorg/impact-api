@@ -13,12 +13,13 @@ export async function emailVariablesRoute ({ body }, res) {
   const query = `
     query {
         dashboard(id: "${emailTemplate.data.dashboardId}") {
-        id, slug, name
+        id, slug, name, sections,
         blocks {
           nodes {
             id
             name
             settings
+            sectionIndex
             metrics {
               nodes {
                 name
@@ -50,30 +51,50 @@ export async function emailVariablesRoute ({ body }, res) {
   const context = {}
   const dashboard = await graphql(globalSchema, query, null, context)
   console.log('dash', org, query, JSON.stringify(dashboard, null, 2))
+  const blocks = dashboard.data.dashboard.blocks.nodes
+  const sections = _.groupBy(blocks, 'sectionIndex')
+  console.log('sec', sections)
 
   const $dashboard = z('.dashboard', {
-    style: { display: 'flex', 'align-items': 'center', 'justify-content': 'center' }
+    style: { 'margin-top': '16px' }
   }, [
-    _.map(dashboard.data.dashboard.blocks.nodes, (block) => {
-      if (block.settings.type !== 'line') {
-        return
-      }
-      const datapoints = block.metrics.nodes[0].dimensions.nodes[0].datapoints.nodes
-      // we grabbed 7, so the last is most recent
-      const yesterdayCount = _.last(datapoints)?.count
-      const priorWeekCount = _.nth(datapoints, -7)?.count
-      const change = 1 - priorWeekCount / yesterdayCount
-      return z('.block', {
-        style: {
-          margin: '12px',
-          'text-align': 'center'
-        }
-      }, [
-        z('.name', block.name),
-        z('.count', { style: { 'font-size': '20px' } }, yesterdayCount),
-        priorWeekCount && yesterdayCount && z('.change', [
-          change > 0 ? '+' : '',
-          Format.percentage(change)
+    _.map(sections, (sectionBlocks, i) => {
+      const section = dashboard.data.dashboard.sections[i]
+      return z('.section', [
+        z('.name', {
+          style: { 'font-size': '18px', margin: '4px 12px' }
+        }, section?.name),
+        z('.blocks', {
+          style: { display: 'flex', 'align-items': 'center', 'justify-content': 'center' }
+        }, [
+          _.map(sectionBlocks, (block) => {
+            if (block.settings.type !== 'line') {
+              return
+            }
+            const metric = block.metrics.nodes[0]
+            const datapoints = metric.dimensions.nodes[0].datapoints.nodes
+            // we grabbed 7, so the last is most recent
+            const yesterdayCount = _.last(datapoints)?.count
+            const priorWeekCount = _.nth(datapoints, -6)?.count
+            const change = 1 - priorWeekCount / yesterdayCount
+            return z('.block', {
+              style: {
+                margin: '12px',
+                'text-align': 'center'
+              }
+            }, [
+              z('.name', block.name),
+              z('.count', { style: { 'font-size': '20px' } },
+                Format.unit(yesterdayCount, metric.unit)
+              ),
+              priorWeekCount && yesterdayCount && z('.change', {
+                style: { color: change > 0 ? 'green' : change < 0 ? 'red' : 'inherit' }
+              }, [
+                change > 0 ? '+' : '',
+                Format.percentage(change)
+              ])
+            ])
+          })
         ])
       ])
     })

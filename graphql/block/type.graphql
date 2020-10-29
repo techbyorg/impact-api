@@ -4,6 +4,7 @@ type Block {
   name: String
   dashboardId: ID!
   settings: JSON
+  sectionIndex: Int # only available when pulled from dashboard
 }
 
 type BlockConnection {

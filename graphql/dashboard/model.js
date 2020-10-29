@@ -11,7 +11,9 @@ class DashboardModel extends Base {
           id: 'timeuuid',
           slug: 'text',
           name: 'text',
-          blockIds: 'json', // [{id: <block id>}], flexible for other settings
+          sections: 'json', // [{name: <text>}]
+          blockIds: 'json', // [{id: <block id>, sectionIndex: <index>}], flexible for other settings
+          settings: 'json', // { isPrivate }
           orgId: 'uuid',
           displayOrder: 'int'
         },

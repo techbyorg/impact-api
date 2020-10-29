@@ -5,6 +5,7 @@ import { GraphqlFormatter, Loader } from 'backend-shared'
 import Block from './model.js'
 
 const blockLoaderFn = Loader.withContext(async (ids, context) => {
+  console.log('load', ids)
   return Block.getAllByIds(ids)
     .then((blocks) => {
       blocks = _.keyBy(blocks, 'id')
@@ -14,12 +15,15 @@ const blockLoaderFn = Loader.withContext(async (ids, context) => {
 
 export default {
   Dashboard: {
-    blocks: (dashboard, { limit }, context) => {
-      return Promise.map(dashboard.blockIds, (blockId) =>
-        blockLoaderFn(context).load(blockId)
+    blocks: async (dashboard, { limit }, context) => {
+      let blocks = await Promise.map(dashboard.blockIds, ({ id }) =>
+        blockLoaderFn(context).load(id)
       )
-        .then((blocks) => _.filter(blocks, (block) => block && !block.settings?.isPrivate))
-        .then(GraphqlFormatter.fromScylla)
+      blocks = _.zipWith(blocks, dashboard.blockIds, (block, { sectionIndex }) =>
+        block && _.defaults({ sectionIndex }, block)
+      )
+      blocks = _.filter(blocks, (block) => block && !block.settings?.isPrivate)
+      return GraphqlFormatter.fromScylla(blocks)
     }
   }
 }

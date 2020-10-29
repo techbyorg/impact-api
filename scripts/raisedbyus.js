@@ -18,11 +18,11 @@ setup().then(() => {
       slug: 'main',
       name: 'Main',
       blockIds: [
-        '9d5c66d4-e3d1-11ea-b1e5-62ef017b7d0f',
-        '165fad70-e568-11ea-b834-c6fe1394a0ba',
-        '1d3bb340-e569-11ea-bc23-8b438c098378',
-        'de93d380-e56c-11ea-b91e-eda2e4dac984',
-        '4856b330-e574-11ea-8757-1f7253836ec0'
+        { id: '9d5c66d4-e3d1-11ea-b1e5-62ef017b7d0f' },
+        { id: '165fad70-e568-11ea-b834-c6fe1394a0ba' },
+        { id: '1d3bb340-e569-11ea-bc23-8b438c098378' },
+        { id: 'de93d380-e56c-11ea-b91e-eda2e4dac984' },
+        { id: '4856b330-e574-11ea-8757-1f7253836ec0' }
       ],
       orgId: ORG_ID
     }

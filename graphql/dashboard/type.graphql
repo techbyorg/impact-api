@@ -2,6 +2,7 @@ type Dashboard {
   id: ID!
   slug: String!
   name: String
+  sections: JSON
 }
 
 type DashboardConnection {
