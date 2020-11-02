@@ -13,7 +13,7 @@ export async function emailVariablesRoute ({ body }, res) {
   const query = `
     query {
         dashboard(id: "${emailTemplate.data.dashboardId}") {
-        id, slug, name, sections,
+        id, slug, name, sections { name },
         blocks {
           nodes {
             id

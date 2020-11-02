@@ -22,4 +22,11 @@ export default {
       }
     }
   }
+
+  // Dashboard: {
+  //   mePermissions: async (dashboard, args, context) => {
+  //     console.log('dash', dashboard)
+  //     OrgUser.hasPermissionByOrgIdAndUser
+  //   }
+  // }
 }

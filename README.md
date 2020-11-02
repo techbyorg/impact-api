@@ -15,3 +15,6 @@ Have ScyllaDB/Cassandra, Elasticsearch and Redis running (Docker commands below 
 - `docker run -i --rm --name redis -p 6379:6379 -v /data:/data -t redis:3.2.0`
 
 `npm run dev`
+
+# Contributing
+Being a public repo, it's best practice to use [git-secrets](https://github.com/awslabs/git-secrets) ([guide here](https://medium.com/better-programming/how-you-can-prevent-committing-secrets-and-credentials-into-git-repositories-adffc25c2ea2))
