@@ -1,13 +1,15 @@
-import _ from 'lodash'
-import { GraphqlFormatter } from 'backend-shared'
+import { GraphqlFormatter, Permission } from 'backend-shared'
 
 import Dashboard from './model.js'
 
 export default {
   Query: {
-    dashboards: async (rootValue, { orgId }) => {
+    dashboards: async (rootValue, { orgId }, { org }) => {
       let dashboards = await Dashboard.getAllByOrgId(orgId)
-      dashboards = _.filter(dashboards, (dashboard) => dashboard && !dashboard.settings?.isPrivate)
+      dashboards = await Permission.filterByOrgUser({
+        models: dashboards, orgUser: org.orgUser, sourceType: 'dashboard', permissions: ['view']
+      })
+
       return GraphqlFormatter.fromScylla(dashboards)
     },
 

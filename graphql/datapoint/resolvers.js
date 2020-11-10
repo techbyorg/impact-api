@@ -38,7 +38,7 @@ const datapointLoaderFn = Loader.withContext(async (options, context) => {
 
 export default {
   Dimension: {
-    datapoints: async (dimension, { segmentId, hackPw, startDate, endDate, timeScale }, context) => {
+    datapoints: async (dimension, { segmentId, startDate, endDate, timeScale }, context) => {
       const loader = datapointLoaderFn(context)
       const metric = dimension._metric
       const block = metric._block

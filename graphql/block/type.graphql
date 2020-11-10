@@ -1,9 +1,11 @@
 type Block {
   id: ID!
   slug: String!
-  name: String
+  name: String!
   dashboardId: ID!
+  metricIds: JSON
   settings: JSON
+  defaultPermissions: JSON
   sectionIndex: Int # only available when pulled from dashboard
 }
 
@@ -14,4 +16,12 @@ type BlockConnection {
 
 extend type Dashboard {
   blocks(limit: Int): BlockConnection
+}
+
+extend type Query {
+  block(id: ID): Block
+}
+
+extend type Mutation {
+  blockUpsert(id: ID, name: String!, dashboardId: ID!, metricIds: JSON!, settings: JSON, defaultPermissions: JSON): Block
 }

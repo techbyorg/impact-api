@@ -53,13 +53,24 @@ const serverPromise = schemaPromise.then((schema) => {
   const graphqlServer = new ApolloServer({
     schema: globalSchema,
     context: async ({ req }) => {
-      let org, apiKey
+      let user, org, apiKey
+      // FIXME: somehow get org/orgUser for every req too?
+      if (req.headers.user) { // FIXME: only accept this from phil server...
+        user = JSON.parse(req.headers.user)
+      }
+      if (req.headers.org) { // FIXME: only accept this from phil server...
+        org = JSON.parse(req.headers.org)
+      }
       if (req.headers.authorization) {
         const apiKeyStr = req.headers.authorization.replace('Bearer ', '')
         const apiKey = await getApiKey(apiKeyStr, config.PHIL_HTTP_API_URL)
         org = apiKey?.org
       }
-      return { org, apiKey }
+      return { user, org, apiKey }
+    },
+    formatError: (err) => {
+      console.error(JSON.stringify(err, null, 2))
+      return err
     }
   })
   graphqlServer.applyMiddleware({ app, path: '/graphql' })

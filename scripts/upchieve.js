@@ -112,7 +112,10 @@ setup().then(() => {
       id: 'bcce88b0-1967-11eb-a8b3-def5c40b732a',
       slug: 'daily-overview', // daily email
       name: 'Daily overview',
-      settings: { isPrivate: true },
+      defaultPermissions: {
+        view: false,
+        edit: false
+      },
       sections: [
         { name: 'Session stats' },
         { name: 'Student stats' },
@@ -518,8 +521,11 @@ setup().then(() => {
       metricIds: [{ id: '08c1ce90-bcab-11ea-8878-624249f44f96' }],
       dashboardId: 'f3a732e0-bb45-11ea-b4d6-01ceb3744d9b',
       settings: {
-        type: 'line',
-        isPrivate: true
+        type: 'line'
+      },
+      defaultPermissions: {
+        view: false,
+        edit: false
       }
     },
     {
@@ -550,8 +556,11 @@ setup().then(() => {
       metricIds: [{ id: 'f53b04c0-be23-11ea-b331-990b97fd2b0a' }],
       dashboardId: 'f3a732e0-bb45-11ea-b4d6-01ceb3744d9b',
       settings: {
-        type: 'overview',
-        isPrivate: true
+        type: 'overview'
+      },
+      defaultPermissions: {
+        view: false,
+        edit: false
       }
     },
     {
@@ -561,8 +570,11 @@ setup().then(() => {
       metricIds: [{ id: 'f53b04c0-be23-11ea-b331-990b97fd2b0a' }],
       dashboardId: 'f3a732e0-bb45-11ea-b4d6-01ceb3744d9b',
       settings: {
-        type: 'line',
-        isPrivate: true
+        type: 'line'
+      },
+      defaultPermissions: {
+        view: false,
+        edit: false
       }
     },
 
@@ -615,8 +627,11 @@ setup().then(() => {
       dashboardId: 'fa5196d0-bb45-11ea-a380-7c3caf68c0ba',
       settings: {
         type: 'line',
-        isPrivate: true,
         omitZeroes: true
+      },
+      defaultPermissions: {
+        view: false,
+        edit: false
       }
     },
     {
@@ -627,8 +642,11 @@ setup().then(() => {
       dashboardId: 'fa5196d0-bb45-11ea-a380-7c3caf68c0ba',
       settings: {
         type: 'line',
-        isPrivate: true,
         omitZeroes: true
+      },
+      defaultPermissions: {
+        view: false,
+        edit: false
       }
     },
     {

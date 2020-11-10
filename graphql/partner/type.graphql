@@ -11,6 +11,6 @@ type PartnerConnection {
 }
 
 extend type Query {
-  partners(orgId: ID!, hackPw: String): PartnerConnection # FIXME: rm hackPw
+  partners(orgId: ID!): PartnerConnection
   partner(orgId: ID!, slug: String): Partner
 }

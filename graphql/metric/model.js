@@ -55,6 +55,14 @@ class MetricModel extends Base {
       .map(this.defaultOutput)
   }
 
+  getAllByOrgId (orgId) {
+    return cknex().select('*')
+      .from('metrics_by_orgId')
+      .where('orgId', '=', orgId)
+      .run()
+      .map(this.defaultOutput)
+  }
+
   getByOrgIdAndSlug (orgId, slug) {
     return cknex().select('*')
       .from('metrics_by_orgId')

@@ -11,6 +11,10 @@ type MetricConnection {
   totalCount: Int
 }
 
+extend type Query {
+  metrics: MetricConnection
+}
+
 extend type Block {
   metrics: MetricConnection
 }

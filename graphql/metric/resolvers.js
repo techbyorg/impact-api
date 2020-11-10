@@ -13,6 +13,13 @@ const metricLoader = Loader.withContext(async (ids, context) => {
 })
 
 export default {
+  Query: {
+    metrics: async (rootValue, args, { org }) => {
+      const metrics = Metric.getAllByOrgId(org.id)
+      return GraphqlFormatter.fromScylla(metrics)
+    }
+  },
+
   Block: {
     metrics: async (block, args, context) => {
       let metrics = await Promise.map(

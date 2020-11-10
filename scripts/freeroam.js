@@ -73,7 +73,11 @@ setup().then(() => {
       metricIds: [{ id: '6835fd60-d34e-11ea-8d39-e8f17015d5b6' }],
       dashboardId: 'a4957da0-cf82-11ea-b9fd-74874934f95a',
       settings: {
-        type: 'line', isPrivate: false
+        type: 'line'
+      },
+      defaultPermissions: {
+        view: false,
+        edit: false
       }
     }
   ]

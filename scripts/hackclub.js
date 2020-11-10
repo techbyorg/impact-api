@@ -289,7 +289,11 @@ setup().then(() => {
       metricIds: [{ id: '38ea0600-c5f2-11ea-82d8-495003cfeb04' }],
       dashboardId: 'd9031d80-c3ad-11ea-bac1-bc3c2083c245',
       settings: {
-        type: 'line', isPrivate: true
+        type: 'line'
+      },
+      defaultPermissions: {
+        view: false,
+        edit: false
       }
     },
     {
@@ -302,7 +306,11 @@ setup().then(() => {
       }],
       dashboardId: 'd9031d80-c3ad-11ea-bac1-bc3c2083c245',
       settings: {
-        type: 'pie', isPrivate: true
+        type: 'pie'
+      },
+      defaultPermissions: {
+        view: false,
+        edit: false
       }
     },
     {
