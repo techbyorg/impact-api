@@ -4,7 +4,7 @@ import Dashboard from '../graphql/dashboard/model.js'
 import Dimension from '../graphql/dimension/model.js'
 import Metric from '../graphql/metric/model.js'
 import Block from '../graphql/block/model.js'
-import Partner from '../graphql/partner/model.js'
+// import Partner from '../graphql/partner/model.js'
 import Segment from '../graphql/segment/model.js'
 import { setup } from '../services/setup.js'
 
@@ -663,150 +663,150 @@ setup().then(() => {
     }
   ]
 
-  const partners = [
-    {
-      id: '26a386c0-e009-11ea-acbf-c285941b0299',
-      slug: 'edready',
-      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
-      segmentId: '4905f3a0-d74a-11ea-91bf-68939e7f3b8b',
-      orgId: ORG_ID
-    },
-    {
-      id: '26a386c1-e009-11ea-a098-7ddabfe3edb3',
-      slug: 'citysquash',
-      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
-      segmentId: 'c3738780-d752-11ea-8020-c5b666b2dbd4',
-      orgId: ORG_ID
-    },
-    {
-      id: '26a386c3-e009-11ea-a2e3-aeba1bbee550',
-      slug: 'queens-library',
-      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
-      segmentId: 'c3738782-d752-11ea-aafc-62636c142e88',
-      orgId: ORG_ID
-    },
-    {
-      id: '26a3add0-e009-11ea-9801-2fb568864f73',
-      slug: 'oasis',
-      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
-      segmentId: 'c373ae90-d752-11ea-8871-fdf99f74cbef',
-      orgId: ORG_ID
-    },
-    {
-      id: 'c373ae92-d752-11ea-96ee-e41353af58ce',
-      slug: 'mindsmatter-co',
-      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
-      segmentId: 'c373ae92-d752-11ea-96ee-e41353af58ce',
-      orgId: ORG_ID
-    },
-    {
-      id: '26a3add3-e009-11ea-b94b-42dcae55d1b9',
-      slug: 'btny',
-      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
-      segmentId: 'c373ae93-d752-11ea-8429-3d4b1639f3c3',
-      orgId: ORG_ID
-    },
-    {
-      id: '26a3add4-e009-11ea-8e33-8ba99d64c0f9',
-      slug: 'college-track',
-      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
-      segmentId: 'c373ae94-d752-11ea-8a0f-10df61f7ad53',
-      orgId: ORG_ID
-    },
-    {
-      id: '26a3add5-e009-11ea-801d-d4b9994a70a1',
-      slug: 'spark',
-      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
-      segmentId: 'c373ae95-d752-11ea-9e8e-475846267960',
-      orgId: ORG_ID
-    },
-    {
-      id: '26a3add6-e009-11ea-b4a4-5e02159c6ee8',
-      slug: 'nyc-mission',
-      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
-      segmentId: 'c373ae96-d752-11ea-9abd-8d089f03a8e8',
-      orgId: ORG_ID
-    },
-    {
-      id: '26a3add7-e009-11ea-86ef-463ebf752328',
-      slug: 'college-is-real',
-      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
-      segmentId: 'c373ae97-d752-11ea-8bfd-b528445ad612',
-      orgId: ORG_ID
-    },
-    {
-      id: '26a3add8-e009-11ea-88a4-8020eac15509',
-      slug: 'south-bronx-united',
-      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
-      segmentId: 'c373ae98-d752-11ea-a974-4fc00725035c',
-      orgId: ORG_ID
-    },
-    {
-      id: '26a3d4e0-e009-11ea-a881-09e9c055c37e',
-      slug: 'first-graduate',
-      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
-      segmentId: '519b1e50-dc31-11ea-b31f-4cd57a79f36a',
-      orgId: ORG_ID
-    },
-    {
-      id: '87e990a0-e009-11ea-bc9d-c9d6b3fc3db7',
-      slug: 'bbbs-nyc',
-      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
-      segmentId: '536bbfa0-dc31-11ea-82a2-86c2099b7e65',
-      orgId: ORG_ID
-    },
-    {
-      id: '87e9b7b0-e009-11ea-8aac-1f21b31077c5',
-      slug: 'ehtp',
-      dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
-      segmentId: '54ce0ec0-dc31-11ea-9695-62047e2a41c0',
-      orgId: ORG_ID
-    },
+  // const partners = [
+  //   {
+  //     id: '26a386c0-e009-11ea-acbf-c285941b0299',
+  //     slug: 'edready',
+  //     dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+  //     segmentId: '4905f3a0-d74a-11ea-91bf-68939e7f3b8b',
+  //     orgId: ORG_ID
+  //   },
+  //   {
+  //     id: '26a386c1-e009-11ea-a098-7ddabfe3edb3',
+  //     slug: 'citysquash',
+  //     dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+  //     segmentId: 'c3738780-d752-11ea-8020-c5b666b2dbd4',
+  //     orgId: ORG_ID
+  //   },
+  //   {
+  //     id: '26a386c3-e009-11ea-a2e3-aeba1bbee550',
+  //     slug: 'queens-library',
+  //     dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+  //     segmentId: 'c3738782-d752-11ea-aafc-62636c142e88',
+  //     orgId: ORG_ID
+  //   },
+  //   {
+  //     id: '26a3add0-e009-11ea-9801-2fb568864f73',
+  //     slug: 'oasis',
+  //     dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+  //     segmentId: 'c373ae90-d752-11ea-8871-fdf99f74cbef',
+  //     orgId: ORG_ID
+  //   },
+  //   {
+  //     id: 'c373ae92-d752-11ea-96ee-e41353af58ce',
+  //     slug: 'mindsmatter-co',
+  //     dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+  //     segmentId: 'c373ae92-d752-11ea-96ee-e41353af58ce',
+  //     orgId: ORG_ID
+  //   },
+  //   {
+  //     id: '26a3add3-e009-11ea-b94b-42dcae55d1b9',
+  //     slug: 'btny',
+  //     dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+  //     segmentId: 'c373ae93-d752-11ea-8429-3d4b1639f3c3',
+  //     orgId: ORG_ID
+  //   },
+  //   {
+  //     id: '26a3add4-e009-11ea-8e33-8ba99d64c0f9',
+  //     slug: 'college-track',
+  //     dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+  //     segmentId: 'c373ae94-d752-11ea-8a0f-10df61f7ad53',
+  //     orgId: ORG_ID
+  //   },
+  //   {
+  //     id: '26a3add5-e009-11ea-801d-d4b9994a70a1',
+  //     slug: 'spark',
+  //     dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+  //     segmentId: 'c373ae95-d752-11ea-9e8e-475846267960',
+  //     orgId: ORG_ID
+  //   },
+  //   {
+  //     id: '26a3add6-e009-11ea-b4a4-5e02159c6ee8',
+  //     slug: 'nyc-mission',
+  //     dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+  //     segmentId: 'c373ae96-d752-11ea-9abd-8d089f03a8e8',
+  //     orgId: ORG_ID
+  //   },
+  //   {
+  //     id: '26a3add7-e009-11ea-86ef-463ebf752328',
+  //     slug: 'college-is-real',
+  //     dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+  //     segmentId: 'c373ae97-d752-11ea-8bfd-b528445ad612',
+  //     orgId: ORG_ID
+  //   },
+  //   {
+  //     id: '26a3add8-e009-11ea-88a4-8020eac15509',
+  //     slug: 'south-bronx-united',
+  //     dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+  //     segmentId: 'c373ae98-d752-11ea-a974-4fc00725035c',
+  //     orgId: ORG_ID
+  //   },
+  //   {
+  //     id: '26a3d4e0-e009-11ea-a881-09e9c055c37e',
+  //     slug: 'first-graduate',
+  //     dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+  //     segmentId: '519b1e50-dc31-11ea-b31f-4cd57a79f36a',
+  //     orgId: ORG_ID
+  //   },
+  //   {
+  //     id: '87e990a0-e009-11ea-bc9d-c9d6b3fc3db7',
+  //     slug: 'bbbs-nyc',
+  //     dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+  //     segmentId: '536bbfa0-dc31-11ea-82a2-86c2099b7e65',
+  //     orgId: ORG_ID
+  //   },
+  //   {
+  //     id: '87e9b7b0-e009-11ea-8aac-1f21b31077c5',
+  //     slug: 'ehtp',
+  //     dashboardIds: [{ id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2' }],
+  //     segmentId: '54ce0ec0-dc31-11ea-9695-62047e2a41c0',
+  //     orgId: ORG_ID
+  //   },
 
-    // volunteers
-    {
-      id: '87e9b7b1-e009-11ea-ab6f-1ff7de6a85ae',
-      slug: 'atlassian',
-      dashboardIds: [{ id: '87e9dec5-e009-11ea-8a77-f56702a1dfae' }],
-      segmentId: '7eafc921-d80f-11ea-8880-f22f5e4ffa9c',
-      orgId: ORG_ID
-    },
-    {
-      id: '87e9b7b2-e009-11ea-b621-04bbc5f412d5',
-      slug: 'verizon',
-      dashboardIds: [{ id: '87e9dec5-e009-11ea-8a77-f56702a1dfae' }],
-      segmentId: '7eafc922-d80f-11ea-93cc-d218c7c704ee',
-      orgId: ORG_ID
-    },
-    {
-      id: '87e9b7b3-e009-11ea-b467-fc3ff27f9e17',
-      slug: 'pwc',
-      dashboardIds: [{ id: '87e9dec5-e009-11ea-8a77-f56702a1dfae' }],
-      segmentId: '7eafc923-d80f-11ea-8cf2-fe3996136618',
-      orgId: ORG_ID
-    },
-    {
-      id: '87e9b7b4-e009-11ea-80b0-92f7b2abc003',
-      slug: 'queens-library',
-      dashboardIds: [{ id: '87e9dec5-e009-11ea-8a77-f56702a1dfae' }],
-      segmentId: '7eafc924-d80f-11ea-a205-2ff7f7ac3529',
-      orgId: ORG_ID
-    },
-    {
-      id: '87e9b7b5-e009-11ea-9349-f1fcf8873d83',
-      slug: 'mizuho',
-      dashboardIds: [{ id: '87e9dec5-e009-11ea-8a77-f56702a1dfae' }],
-      segmentId: '7eaff030-d80f-11ea-9efb-41529ad65462',
-      orgId: ORG_ID
-    },
-    {
-      id: '87e9b7b6-e009-11ea-8fc5-a290e3c1327e',
-      slug: 'goldman-sachs',
-      dashboardIds: [{ id: '87e9dec5-e009-11ea-8a77-f56702a1dfae' }],
-      segmentId: '95bafc70-d80f-11ea-8a54-b1785c783c65',
-      orgId: ORG_ID
-    }
-  ]
+  //   // volunteers
+  //   {
+  //     id: '87e9b7b1-e009-11ea-ab6f-1ff7de6a85ae',
+  //     slug: 'atlassian',
+  //     dashboardIds: [{ id: '87e9dec5-e009-11ea-8a77-f56702a1dfae' }],
+  //     segmentId: '7eafc921-d80f-11ea-8880-f22f5e4ffa9c',
+  //     orgId: ORG_ID
+  //   },
+  //   {
+  //     id: '87e9b7b2-e009-11ea-b621-04bbc5f412d5',
+  //     slug: 'verizon',
+  //     dashboardIds: [{ id: '87e9dec5-e009-11ea-8a77-f56702a1dfae' }],
+  //     segmentId: '7eafc922-d80f-11ea-93cc-d218c7c704ee',
+  //     orgId: ORG_ID
+  //   },
+  //   {
+  //     id: '87e9b7b3-e009-11ea-b467-fc3ff27f9e17',
+  //     slug: 'pwc',
+  //     dashboardIds: [{ id: '87e9dec5-e009-11ea-8a77-f56702a1dfae' }],
+  //     segmentId: '7eafc923-d80f-11ea-8cf2-fe3996136618',
+  //     orgId: ORG_ID
+  //   },
+  //   {
+  //     id: '87e9b7b4-e009-11ea-80b0-92f7b2abc003',
+  //     slug: 'queens-library',
+  //     dashboardIds: [{ id: '87e9dec5-e009-11ea-8a77-f56702a1dfae' }],
+  //     segmentId: '7eafc924-d80f-11ea-a205-2ff7f7ac3529',
+  //     orgId: ORG_ID
+  //   },
+  //   {
+  //     id: '87e9b7b5-e009-11ea-9349-f1fcf8873d83',
+  //     slug: 'mizuho',
+  //     dashboardIds: [{ id: '87e9dec5-e009-11ea-8a77-f56702a1dfae' }],
+  //     segmentId: '7eaff030-d80f-11ea-9efb-41529ad65462',
+  //     orgId: ORG_ID
+  //   },
+  //   {
+  //     id: '87e9b7b6-e009-11ea-8fc5-a290e3c1327e',
+  //     slug: 'goldman-sachs',
+  //     dashboardIds: [{ id: '87e9dec5-e009-11ea-8a77-f56702a1dfae' }],
+  //     segmentId: '95bafc70-d80f-11ea-8a54-b1785c783c65',
+  //     orgId: ORG_ID
+  //   }
+  // ]
 
   const segments = [
     {
@@ -948,8 +948,8 @@ setup().then(() => {
     Dimension.batchUpsert(dimensions),
     Metric.batchUpsert(metrics),
     Block.batchUpsert(blocks),
-    Segment.batchUpsert(segments),
-    Partner.batchUpsert(partners)
+    Segment.batchUpsert(segments)
+    // Partner.batchUpsert(partners)
   ]).then(() => {
     console.log('done')
   })

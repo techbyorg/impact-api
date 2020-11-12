@@ -5,6 +5,7 @@ import Dashboard from './model.js'
 export default {
   Query: {
     dashboards: async (rootValue, { orgId }, { org }) => {
+      orgId = orgId || org.id
       let dashboards = await Dashboard.getAllByOrgId(orgId)
       dashboards = await Permission.filterByOrgUser({
         models: dashboards, orgUser: org.orgUser, sourceType: 'dashboard', permissions: ['view']
@@ -13,13 +14,16 @@ export default {
       return GraphqlFormatter.fromScylla(dashboards)
     },
 
-    dashboard: async (rootValue, { id, orgId, slug }) => {
+    dashboard: async (rootValue, { id, orgId, slug }, { org }) => {
       if (id) {
         return Dashboard.getById(id)
       } else if (slug) {
         return Dashboard.getByOrgIdAndSlug(orgId, slug)
       } else {
-        const dashboards = await Dashboard.getAllByOrgId(orgId)
+        let dashboards = await Dashboard.getAllByOrgId(orgId)
+        dashboards = await Permission.filterByOrgUser({
+          models: dashboards, orgUser: org.orgUser, sourceType: 'dashboard', permissions: ['view']
+        })
         return dashboards[0]
       }
     }
