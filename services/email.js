@@ -48,7 +48,31 @@ export async function emailVariablesRoute ({ body }, res) {
       }
     }
   `
-  const context = {}
+  const context = {
+    // fake perms
+    org: {
+      orgUser: {
+        roles: {
+          nodes: [
+            {
+              permissions: [
+                {
+                  sourceType: 'global-public',
+                  permission: 'view',
+                  value: true
+                },
+                {
+                  sourceType: 'global-private',
+                  permission: 'view',
+                  value: true
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
   const dashboard = await graphql(globalSchema, query, null, context)
   console.log('dash', org, query, JSON.stringify(dashboard, null, 2))
   const blocks = dashboard.data.dashboard.blocks.nodes

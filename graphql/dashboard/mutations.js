@@ -10,7 +10,6 @@ export default {
         const getBySlug = (slug) => Dashboard.getByOrgIdAndSlug(org.id, slug)
         diff.slug = await Dashboard.getUniqueSlug(_.kebabCase(name), { getBySlug })
       }
-      console.log('up', diff)
       return Dashboard.upsert(diff, { skipAdditions: Boolean(id) })
     }
   }
