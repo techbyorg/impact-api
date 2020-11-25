@@ -11,5 +11,6 @@ type SegmentConnection {
 }
 
 extend type Query {
-  segments(orgId: ID!): SegmentConnection
+  segment(slug: String!): Segment
+  segments: SegmentConnection
 }

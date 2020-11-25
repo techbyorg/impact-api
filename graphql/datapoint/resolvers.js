@@ -20,7 +20,7 @@ const datapointLoaderFn = Loader.withContext(async (options, context) => {
     return { metricId, segmentId, dimensionId, dimensionValue, startDate, endDate, timeScale }
   })
   const { startDate, endDate, timeScale } = options[0]
-  console.log(startDate, endDate, timeScale)
+  console.log(startDate, endDate, timeScale, options.segmentId)
   const minScaledTime = Time.getScaledTimeByTimeScale(timeScale, startDate)
   const maxScaledTime = Time.getScaledTimeByTimeScale(timeScale, endDate)
 
