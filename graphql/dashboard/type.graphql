@@ -2,6 +2,7 @@ type Dashboard {
   id: ID!
   slug: String!
   name: String
+  defaultPermissions: JSON
   sections: [DashboardSection]
 }
 
@@ -21,5 +22,5 @@ extend type Query {
 }
 
 extend type Mutation {
-  dashboardUpsert(id: ID, name: String!): Dashboard
+  dashboardUpsert(id: ID, name: String!, defaultPermissions: JSON): Dashboard
 }
