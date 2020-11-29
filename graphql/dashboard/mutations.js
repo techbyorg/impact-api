@@ -4,8 +4,8 @@ import Dashboard from './model.js'
 
 export default {
   Mutation: {
-    dashboardUpsert: async (rootValue, { id, name, defaultPermissions }, { org, user }) => {
-      const diff = { id, name, defaultPermissions, orgId: org.id }
+    dashboardUpsert: async (rootValue, { id, name }, { org, user }) => {
+      const diff = { id, name, orgId: org.id }
       if (!id) {
         const getBySlug = (slug) => Dashboard.getByOrgIdAndSlug(org.id, slug)
         diff.slug = await Dashboard.getUniqueSlug(_.kebabCase(name), { getBySlug })

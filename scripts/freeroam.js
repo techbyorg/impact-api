@@ -49,7 +49,7 @@ setup().then(() => {
           dimensionValue: 'd0'
         }
       ]
-    },
+    }
   ]
 
   const dimensions = [
@@ -67,6 +67,7 @@ setup().then(() => {
       }
     },
     {
+      // FIXME: private
       id: '7f496e10-d34e-11ea-9f6e-16918ac6562e',
       slug: 'd1-retention',
       name: 'Day 1 retention',
@@ -74,10 +75,6 @@ setup().then(() => {
       dashboardId: 'a4957da0-cf82-11ea-b9fd-74874934f95a',
       settings: {
         type: 'line'
-      },
-      defaultPermissions: {
-        view: false,
-        edit: false
       }
     }
   ]

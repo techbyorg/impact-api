@@ -12,8 +12,7 @@ class BlockModel extends Base {
           name: 'text',
           metricIds: 'json', // [{id: <metric id>}], flexible for other settings
           orgId: 'uuid',
-          settings: 'json',
-          defaultPermissions: { type: 'json', defaultFn: () => ({ view: true, edit: false }) }
+          settings: 'json'
         },
         primaryKey: {
           partitionKey: ['id'],

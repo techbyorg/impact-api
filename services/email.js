@@ -57,12 +57,7 @@ export async function emailVariablesRoute ({ body }, res) {
             {
               permissions: [
                 {
-                  sourceType: 'global-public',
-                  permission: 'view',
-                  value: true
-                },
-                {
-                  sourceType: 'global-private',
+                  sourceType: 'global',
                   permission: 'view',
                   value: true
                 }

@@ -3,9 +3,9 @@ import Dashboard from '../dashboard/model.js'
 
 export default {
   Mutation: {
-    blockUpsert: async (rootValue, { id, name, dashboardId, metricIds, settings, defaultPermissions }, { org, user }) => {
+    blockUpsert: async (rootValue, { id, name, dashboardId, metricIds, settings }, { org, user }) => {
       const block = await Block.upsert({
-        id, name, metricIds, settings, defaultPermissions
+        id, name, metricIds, settings
       }, { skipAdditions: Boolean(id) })
       const dashboard = await Dashboard.getById(dashboardId)
       await Dashboard.upsertByRow(dashboard, {

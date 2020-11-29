@@ -5,7 +5,6 @@ type Block {
   dashboardId: ID!
   metricIds: JSON
   settings: JSON
-  defaultPermissions: JSON
   sectionIndex: Int # only available when pulled from dashboard
 }
 
@@ -23,5 +22,5 @@ extend type Query {
 }
 
 extend type Mutation {
-  blockUpsert(id: ID, name: String!, dashboardId: ID!, metricIds: JSON!, settings: JSON, defaultPermissions: JSON): Block
+  blockUpsert(id: ID, name: String!, dashboardId: ID!, metricIds: JSON!, settings: JSON): Block
 }

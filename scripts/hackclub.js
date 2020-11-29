@@ -283,6 +283,7 @@ setup().then(() => {
       }
     },
     {
+      // FIXME: private
       id: '450f7c00-c5fa-11ea-a26d-654a4f2e9697',
       slug: 'w1-retention',
       name: 'Week 1 retention',
@@ -290,13 +291,10 @@ setup().then(() => {
       dashboardId: 'd9031d80-c3ad-11ea-bac1-bc3c2083c245',
       settings: {
         type: 'line'
-      },
-      defaultPermissions: {
-        view: false,
-        edit: false
       }
     },
     {
+      // FIXME: private
       id: '10277230-c62d-11ea-92dd-fa548e0c1a8c',
       slug: 'days-until-promoted',
       name: 'Days until promoted',
@@ -307,10 +305,6 @@ setup().then(() => {
       dashboardId: 'd9031d80-c3ad-11ea-bac1-bc3c2083c245',
       settings: {
         type: 'pie'
-      },
-      defaultPermissions: {
-        view: false,
-        edit: false
       }
     },
     {

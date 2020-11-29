@@ -109,13 +109,10 @@ setup().then(() => {
       orgId: ORG_ID
     },
     {
+      // FIXME: private
       id: 'bcce88b0-1967-11eb-a8b3-def5c40b732a',
       slug: 'daily-overview', // daily email
       name: 'Daily overview',
-      defaultPermissions: {
-        view: false,
-        edit: false
-      },
       sections: [
         { name: 'Session stats' },
         { name: 'Student stats' },
@@ -515,6 +512,7 @@ setup().then(() => {
       }
     },
     {
+      // FIXME: private
       id: '610a0ea0-bcab-11ea-8996-4b0c569ecccb',
       slug: 'onboarded-volunteers',
       name: 'New volunteers (onboarded)',
@@ -522,10 +520,6 @@ setup().then(() => {
       dashboardId: 'f3a732e0-bb45-11ea-b4d6-01ceb3744d9b',
       settings: {
         type: 'line'
-      },
-      defaultPermissions: {
-        view: false,
-        edit: false
       }
     },
     {
@@ -550,6 +544,7 @@ setup().then(() => {
       }
     },
     {
+      // FIXME: private
       id: 'b41ad9d0-d3a3-11ea-b273-df031a81f9e4',
       slug: 'volunteer-overview-internal',
       name: 'Overview',
@@ -557,13 +552,10 @@ setup().then(() => {
       dashboardId: 'f3a732e0-bb45-11ea-b4d6-01ceb3744d9b',
       settings: {
         type: 'overview'
-      },
-      defaultPermissions: {
-        view: false,
-        edit: false
       }
     },
     {
+      // FIXME: private
       id: 'beda0670-be1d-11ea-9e09-84299b0f73ec',
       slug: 'volunteer-onboard-percent',
       name: 'Percent of volunteers onboarded',
@@ -571,10 +563,6 @@ setup().then(() => {
       dashboardId: 'f3a732e0-bb45-11ea-b4d6-01ceb3744d9b',
       settings: {
         type: 'line'
-      },
-      defaultPermissions: {
-        view: false,
-        edit: false
       }
     },
 
@@ -620,6 +608,7 @@ setup().then(() => {
       }
     },
     {
+      // FIXME: private
       id: '52c3c690-bcc6-11ea-83f7-49a342e449fa',
       slug: 'session-rating-by-topic',
       name: 'Session rating by topic',
@@ -628,13 +617,10 @@ setup().then(() => {
       settings: {
         type: 'line',
         omitZeroes: true
-      },
-      defaultPermissions: {
-        view: false,
-        edit: false
       }
     },
     {
+      // FIXME: private
       id: '59232540-bd6a-11ea-b56d-2114b4271b67',
       slug: 'session-rating-by-sub-topic',
       name: 'Session rating by subtopic',
@@ -643,10 +629,6 @@ setup().then(() => {
       settings: {
         type: 'line',
         omitZeroes: true
-      },
-      defaultPermissions: {
-        view: false,
-        edit: false
       }
     },
     {

@@ -14,7 +14,6 @@ class DashboardModel extends Base {
           sections: { type: 'json', defaultFn: () => [] }, // [{name: <text>}]
           blockIds: { type: 'json', defaultFn: () => [] }, // [{id: <block id>, sectionIndex: <index>}], flexible for other settings
           settings: 'json', // nothing yet
-          defaultPermissions: { type: 'json', defaultFn: () => ({ view: true, edit: false }) },
           orgId: 'uuid',
           displayOrder: 'int'
         },
