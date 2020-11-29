@@ -13,7 +13,7 @@ export default {
     segments: async (rootValue, args, { org }) => {
       // TODO: more focused perm (this is just edit dash perm)
       const hasViewAllSegmentsPermission = Permission.hasPermission({
-        sourceType: 'dashboard', sourceModel: null, permissions: ['edit'], orgUser: org.orgUser
+        sourceType: 'impact-dashboard', sourceModel: null, permissions: ['edit'], orgUser: org.orgUser
       })
       const segmentIds = _.flatten(_.map(org.orgUser.partners?.nodes, ({ data }) => {
         return data.impact.segmentIds

@@ -23,7 +23,7 @@ export default {
       const { org } = context
 
       // FIXME: some perms stuff should be directives...
-      // @hasPermissions(sourceType: global-public)
+      // @hasPermissions(sourceType: global)
       // a lot will still have to be in code too. eg check if can view private blocks
       // (won't know it's a private block until it has been fetched)
 

@@ -15,9 +15,9 @@ type DashboardConnection {
 }
 
 extend type Query {
-  dashboards(orgId: ID): DashboardConnection # @hasPermissions(sourceType: "global-public", permission: "view")
+  dashboards(orgId: ID): DashboardConnection # @hasPermissions(sourceType: "global", permission: "view")
   # TODO: certain roles having access to different sets of dashboards seems important... seems difficult though
-  dashboard(id: ID, orgId: String, slug: String): Dashboard # @hasPermissions(sourceType: "global-public", permission: "view")
+  dashboard(id: ID, orgId: String, slug: String): Dashboard # @hasPermissions(sourceType: "global", permission: "view")
 }
 
 extend type Mutation {
