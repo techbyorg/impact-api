@@ -27,9 +27,6 @@ export default {
       // a lot will still have to be in code too. eg check if can view private blocks
       // (won't know it's a private block until it has been fetched)
 
-      // const hasViewPrivateBlockPermission = OrgUser.hasPermissionByOrgIdAndUser(
-      //   dashboard.orgId, user, ['view']
-      // )
       let blocks = await Promise.map(dashboard.blockIds, ({ id }) =>
         blockLoaderFn(context).load(id)
       )
@@ -38,7 +35,7 @@ export default {
       )
 
       blocks = await Permission.filterByOrgUser({
-        models: blocks, orgUser: org.orgUser, sourceType: 'block', permissions: ['view']
+        models: blocks, orgUser: org.orgUser, sourceType: 'impact-block', permissions: ['view']
       })
 
       return GraphqlFormatter.fromScylla(blocks)

@@ -15,6 +15,7 @@ export default {
     },
 
     dashboard: async (rootValue, { id, orgId, slug }, { org }) => {
+      orgId = orgId || org.id
       if (id) {
         return Dashboard.getById(id)
       } else if (slug) {

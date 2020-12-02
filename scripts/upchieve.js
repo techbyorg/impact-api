@@ -28,39 +28,39 @@ setup().then(() => {
   const ORG_ID = 'b6295100-bb45-11ea-91c2-9d708da068b3'
 
   const dashboards = [
-    // {
-    //   id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2',
-    //   slug: 'student-partner-dashboard',
-    //   name: 'Student Partner Dashboard',
-    //   blockIds: [
-    //     { id: '0dd9e4f0-bb46-11ea-a3e0-dbf3bf48d9f8' }, // sessions
-    //     { id: 'b57ca070-bd6d-11ea-b11b-51f5b01276d4' }, // sessions day of week
-    //     { id: '9c366280-bd73-11ea-b87c-964ef1776e0c' }, // sessions hour of day
-    //     { id: 'd62c7d30-bd73-11ea-afd8-6c48e6ae38f1' }, // sessions topic
-    //     { id: '4e527bf0-bd85-11ea-9545-2467677d7f85' }, // sessions subtopic
-    //     { id: 'e6ff8590-bbe2-11ea-b2e2-0a394ea8916e' }, // new students
-    //     { id: '0cf1e6e0-bcaf-11ea-9d68-f0e5274248a0' }, // avg session duration
-    //     { id: 'dea177f0-bcc3-11ea-b87c-9c5d694346f5' }, // chat messages per session
-    //     { id: '31f4fbc0-bbf2-11ea-9187-16827e258c82' } // overview
-    //   ],
-    //   orgId: ORG_ID
-    // },
-    // {
-    //   id: '87e9dec5-e009-11ea-8a77-f56702a1dfae',
-    //   slug: 'volunteer-partner-dashboard',
-    //   name: 'Volunteer Partner Dashboard',
-    //   blockIds: [
-    //     { id: '0dd9e4f0-bb46-11ea-a3e0-dbf3bf48d9f8' }, // sessions
-    //     { id: 'b57ca070-bd6d-11ea-b11b-51f5b01276d4' }, // sessions day of week
-    //     { id: '9c366280-bd73-11ea-b87c-964ef1776e0c' }, // sessions hour of day
-    //     { id: 'd62c7d30-bd73-11ea-afd8-6c48e6ae38f1' }, // sessions topic
-    //     { id: '4e527bf0-bd85-11ea-9545-2467677d7f85' }, // sessions subtopic
-    //     { id: 'c18b1040-bcaa-11ea-a644-bfdddfa3ff85' }, // new volunteers
-    //     { id: '0cf1e6e0-bcaf-11ea-9d68-f0e5274248a0' }, // avg session duration
-    //     { id: 'dea177f0-bcc3-11ea-b87c-9c5d694346f5' } // chat messages per session
-    //   ],
-    //   orgId: ORG_ID
-    // },
+    {
+      id: '87e9dec6-e009-11ea-af5f-ebaacc040fe2',
+      slug: 'student-partner-dashboard',
+      name: 'Student Partner Dashboard',
+      blockIds: [
+        { id: '0dd9e4f0-bb46-11ea-a3e0-dbf3bf48d9f8' }, // sessions
+        { id: 'b57ca070-bd6d-11ea-b11b-51f5b01276d4' }, // sessions day of week
+        { id: '9c366280-bd73-11ea-b87c-964ef1776e0c' }, // sessions hour of day
+        { id: 'd62c7d30-bd73-11ea-afd8-6c48e6ae38f1' }, // sessions topic
+        { id: '4e527bf0-bd85-11ea-9545-2467677d7f85' }, // sessions subtopic
+        { id: 'e6ff8590-bbe2-11ea-b2e2-0a394ea8916e' }, // new students
+        { id: '0cf1e6e0-bcaf-11ea-9d68-f0e5274248a0' }, // avg session duration
+        { id: 'dea177f0-bcc3-11ea-b87c-9c5d694346f5' }, // chat messages per session
+        { id: '31f4fbc0-bbf2-11ea-9187-16827e258c82' } // overview
+      ],
+      orgId: ORG_ID
+    },
+    {
+      id: '87e9dec5-e009-11ea-8a77-f56702a1dfae',
+      slug: 'volunteer-partner-dashboard',
+      name: 'Volunteer Partner Dashboard',
+      blockIds: [
+        { id: '0dd9e4f0-bb46-11ea-a3e0-dbf3bf48d9f8' }, // sessions
+        { id: 'b57ca070-bd6d-11ea-b11b-51f5b01276d4' }, // sessions day of week
+        { id: '9c366280-bd73-11ea-b87c-964ef1776e0c' }, // sessions hour of day
+        { id: 'd62c7d30-bd73-11ea-afd8-6c48e6ae38f1' }, // sessions topic
+        { id: '4e527bf0-bd85-11ea-9545-2467677d7f85' }, // sessions subtopic
+        { id: 'c18b1040-bcaa-11ea-a644-bfdddfa3ff85' }, // new volunteers
+        { id: '0cf1e6e0-bcaf-11ea-9d68-f0e5274248a0' }, // avg session duration
+        { id: 'dea177f0-bcc3-11ea-b87c-9c5d694346f5' } // chat messages per session
+      ],
+      orgId: ORG_ID
+    },
     {
       id: 'bdbe6310-bb45-11ea-8279-c32478148665',
       slug: 'high-level-metrics',
@@ -109,7 +109,6 @@ setup().then(() => {
       orgId: ORG_ID
     },
     {
-      // FIXME: private
       id: 'bcce88b0-1967-11eb-a8b3-def5c40b732a',
       slug: 'daily-overview', // daily email
       name: 'Daily overview',
@@ -512,7 +511,6 @@ setup().then(() => {
       }
     },
     {
-      // FIXME: private
       id: '610a0ea0-bcab-11ea-8996-4b0c569ecccb',
       slug: 'onboarded-volunteers',
       name: 'New volunteers (onboarded)',
@@ -544,7 +542,6 @@ setup().then(() => {
       }
     },
     {
-      // FIXME: private
       id: 'b41ad9d0-d3a3-11ea-b273-df031a81f9e4',
       slug: 'volunteer-overview-internal',
       name: 'Overview',
@@ -555,7 +552,6 @@ setup().then(() => {
       }
     },
     {
-      // FIXME: private
       id: 'beda0670-be1d-11ea-9e09-84299b0f73ec',
       slug: 'volunteer-onboard-percent',
       name: 'Percent of volunteers onboarded',
@@ -608,7 +604,6 @@ setup().then(() => {
       }
     },
     {
-      // FIXME: private
       id: '52c3c690-bcc6-11ea-83f7-49a342e449fa',
       slug: 'session-rating-by-topic',
       name: 'Session rating by topic',
@@ -620,7 +615,6 @@ setup().then(() => {
       }
     },
     {
-      // FIXME: private
       id: '59232540-bd6a-11ea-b56d-2114b4271b67',
       slug: 'session-rating-by-sub-topic',
       name: 'Session rating by subtopic',
