@@ -7,10 +7,12 @@ export default {
       const block = await Block.upsert({
         id, name, metricIds, settings
       }, { skipAdditions: Boolean(id) })
-      const dashboard = await Dashboard.getById(dashboardId)
-      await Dashboard.upsertByRow(dashboard, {
-        blockIds: dashboard.blockIds.concat([{ id: block.id }])
-      })
+      if (dashboardId) {
+        const dashboard = await Dashboard.getById(dashboardId)
+        await Dashboard.upsertByRow(dashboard, {
+          blockIds: dashboard.blockIds.concat([{ id: block.id }])
+        })
+      }
       return block
     }
   }
