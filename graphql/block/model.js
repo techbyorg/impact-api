@@ -39,7 +39,6 @@ class BlockModel extends Base {
   }
 
   getById (id) {
-    console.log('get block', id)
     return cknex().select('*')
       .from('blocks_by_id')
       .where('id', '=', id)

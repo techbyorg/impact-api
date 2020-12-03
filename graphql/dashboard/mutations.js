@@ -11,6 +11,11 @@ export default {
         diff.slug = await Dashboard.getUniqueSlug(_.kebabCase(name), { getBySlug })
       }
       return Dashboard.upsert(diff, { skipAdditions: Boolean(id) })
+    },
+
+    dashboardDeleteById: async (rootValue, { id }, { org, user }) => {
+      const dashboard = await Dashboard.getById(id)
+      Dashboard.deleteByRow(dashboard)
     }
   }
 }

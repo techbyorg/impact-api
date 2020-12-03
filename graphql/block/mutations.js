@@ -14,6 +14,12 @@ export default {
         })
       }
       return block
+    },
+
+    blockDeleteById: async (rootValue, { id }, { org, user }) => {
+      const block = await Block.getById(id)
+      console.log('delete', block)
+      Block.deleteByRow(block)
     }
   }
 }

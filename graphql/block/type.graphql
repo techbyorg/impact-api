@@ -23,4 +23,5 @@ extend type Query {
 
 extend type Mutation {
   blockUpsert(id: ID, name: String!, dashboardId: ID, metricIds: JSON!, settings: JSON): Block
+  blockDeleteById(id: ID): Boolean
 }

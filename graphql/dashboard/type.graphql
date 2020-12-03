@@ -22,4 +22,5 @@ extend type Query {
 
 extend type Mutation {
   dashboardUpsert(id: ID, name: String!): Dashboard
+  dashboardDeleteById(id: ID): Boolean
 }
