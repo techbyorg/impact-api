@@ -14,8 +14,16 @@ const blockLoaderFn = Loader.withContext(async (ids, context) => {
 
 export default {
   Query: {
-    block: async (rootValue, { id }, { org, user }) => {
-      return Block.getById(id)
+    block: async (rootValue, { id, type, metricIds }, { org, user }) => {
+      const block = await Block.getById(id)
+      console.log('get...', type, metricIds)
+      if (type && block.settings) { // for preview
+        block.settings.type = type
+      }
+      if (!_.isEmpty(metricIds)) {
+        block.metricIds = metricIds
+      }
+      return block
     }
   },
   Dashboard: {

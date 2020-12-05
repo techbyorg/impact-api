@@ -14,3 +14,8 @@ extend type Query {
   segment(slug: String!): Segment
   segments: SegmentConnection
 }
+
+extend type Mutation {
+  segmentUpsert(id: ID, slug: String, name: String): Segment
+  segmentDeleteById(id: ID): Boolean
+}

@@ -55,13 +55,15 @@ export async function emailVariablesRoute ({ body }, res) {
         roles: {
           nodes: [
             {
-              permissions: [
-                {
-                  sourceType: 'global',
-                  permission: 'view',
-                  value: true
-                }
-              ]
+              permissions: {
+                nodes: [
+                  {
+                    sourceType: 'global',
+                    permission: 'view',
+                    value: true
+                  }
+                ]
+              }
             }
           ]
         }

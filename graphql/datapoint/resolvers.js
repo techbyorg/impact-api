@@ -66,7 +66,7 @@ export default {
         )
       }
 
-      if (block?.settings.type === 'line' && !block?.settings.omitZeroes) {
+      if (block?.settings.type === 'line' && !block?.settings.omitZeroes && startDate && endDate && timeScale) {
         datapoints = addZeroes(datapoints, { dimension, segmentId, startDate, endDate, timeScale })
       }
 

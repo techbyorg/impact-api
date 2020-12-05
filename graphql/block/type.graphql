@@ -18,7 +18,7 @@ extend type Dashboard {
 }
 
 extend type Query {
-  block(id: ID): Block
+  block(id: ID, type: String, metricIds: [JSON]): Block
 }
 
 extend type Mutation {
