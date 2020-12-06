@@ -12,7 +12,7 @@ import {
 
 // combining into 1 query doesn't really work...
 // multi-column `WHERE (metricId, dimensionId, timeBucket) in (...)` doesn't work for primaryKeys
-// load is still somewhat useful since some metrics datapoint will be loaded in multiple times
+// load is still somewhat useful since some metrics datapoints will be loaded in multiple times
 // for derived metrics
 const datapointLoaderFn = Loader.withContext(async (options, context) => {
   options = _.map(options, (option) => {

@@ -15,6 +15,7 @@ class MetricModel extends Base {
           type: { type: 'text', defaultFn: () => 'standard' }, // standard | derived
           // for derived metrics. derived at READ time
           transforms: { type: 'json', defaultFn: () => [] },
+          firstDatapointTime: 'date', // used for 'all time'
           // cannot use set here
           // `WHERE orgId=<orgId> AND slug IN <slugs>` gives Cannot restrict clustering columns by IN relations when a collection is selected by the query
           // https://github.com/scylladb/scylla/issues/4251 (though I don't think they pegged issue properly)

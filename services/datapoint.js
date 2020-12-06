@@ -7,6 +7,7 @@ import Promise from 'bluebird'
 import { cknex, Time } from 'backend-shared'
 
 import Datapoint from '../graphql/datapoint/model.js'
+import Metric from '../graphql/metric/model.js'
 import Unique from '../graphql/unique/model.js'
 
 const { extendMoment } = momentRange
@@ -181,4 +182,10 @@ export function addZeroes (datapoints, { dimension, startDate, endDate, timeScal
     [datapoint.scaledTime, datapoint.dimensionValue].join('|')
   ))
   return _.orderBy(datapointsWithZeroes, 'scaledTime', 'asc')
+}
+
+export function setMetricFirstDatapointTimeIfNecessary (metric, date) {
+  if (!metric.firstDatapointTime || metric.firstDatapointTime > date) {
+    Metric.upsertByRow(metric, { firstDatapointTime: date })
+  }
 }

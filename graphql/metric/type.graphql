@@ -4,6 +4,7 @@ type Metric {
   slug: String!
   name: String
   unit: String
+  firstDatapointTime: Date
 }
 
 type MetricConnection {

@@ -9,6 +9,7 @@ import Datapoint from '../graphql/datapoint/model.js'
 import Dimension from '../graphql/dimension/model.js'
 import Metric from '../graphql/metric/model.js'
 import Segment from '../graphql/segment/model.js'
+import { setMetricFirstDatapointTimeIfNecessary } from '../services/datapoint.js'
 
 const ORG_ID = 'b6295100-bb45-11ea-91c2-9d708da068b3' // upchieve
 
@@ -42,6 +43,7 @@ export async function importDatapoints ({ startDate, endDate, timeScale, increme
     const metric = await metricLoader(context).load(slug)
     const metricId = metric.id
     let metricDatapoints = await Promise.map(datapoints, async (datapoint) => {
+      setMetricFirstDatapointTimeIfNecessary(metric, datapoint.date)
       // legacy fix
       if (datapoint.scaledTime === 'ALL') { datapoint.scaledTime = 'ALL:ALL' }
 

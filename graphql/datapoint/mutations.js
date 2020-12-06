@@ -8,7 +8,9 @@ import Datapoint from './model.js'
 import Dimension from '../dimension/model.js'
 import Metric from '../metric/model.js'
 import Unique from '../unique/model.js'
-import { getDimensions, adjustCountForTotal } from '../../services/datapoint.js'
+import {
+  getDimensions, adjustCountForTotal, setMetricFirstDatapointTimeIfNecessary
+} from '../../services/datapoint.js'
 import LOCK_PREFIXES from '../../services/cache.js'
 import config from '../../config.js'
 
@@ -67,6 +69,8 @@ export default {
       const segmentId = cknex.emptyUuid // TODO
       const scaledTime = Time.getScaledTimeByTimeScale(timeScale, date, org.timezone)
 
+      setMetricFirstDatapointTimeIfNecessary(metric, date)
+
       if (isTotal) {
         // grab current values and adjust count accordingly
         // done for a single dimension so 'all' gets adjusted properly
@@ -114,7 +118,6 @@ export default {
     }
   }
 }
-
 async function incrementUnique (options) {
   const {
     metricSlug, dimensionId, dimensionValue, hash, date, org
@@ -126,6 +129,7 @@ async function incrementUnique (options) {
   Cache.lock(cacheKey, async () => {
     // console.log('inc unique', metricSlug, hash)
     const metric = await Metric.getByOrgIdAndSlug(org.id, metricSlug)
+    setMetricFirstDatapointTimeIfNecessary(metric, date)
     // TODO: get segmentIds from segmentSlugs
     const segmentId = cknex.emptyUuid // TODO
     const scaledTimes = Time.getScaledTimesByTimeScales(Datapoint.TIME_SCALES, date, org.timezone)
