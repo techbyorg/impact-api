@@ -7,6 +7,7 @@ import { Loader, Time, Cache, cknex } from 'backend-shared'
 import Datapoint from './model.js'
 import Dimension from '../dimension/model.js'
 import Metric from '../metric/model.js'
+import Segment from '../segment/model.js'
 import Unique from '../unique/model.js'
 import {
   getDimensions, adjustCountForTotal, setMetricFirstDatapointTimeIfNecessary
@@ -24,49 +25,43 @@ const INCREMENT_UNIQUE_LOCK_EXPIRE_SECONDS = 5
 
 const metricLoaderFn = Loader.withContext(async (slugs, context) => {
   const { org } = context
-  return Metric.getAllByOrgIdAndSlugs(org.id, slugs)
-    .then((metrics) => {
-      metrics = _.keyBy(metrics, 'slug')
-      return _.map(slugs, slug => metrics[slug])
-    })
+  let metrics = await Metric.getAllByOrgIdAndSlugs(org.id, slugs)
+  metrics = _.keyBy(metrics, 'slug')
+  return _.map(slugs, slug => metrics[slug])
 })
 
 const dimensionLoaderFn = Loader.withContext(async (slugs, context) => {
   const { org } = context
-  return Dimension.getAllByOrgIdAndSlugs(org.id, slugs)
-    .then((dimensions) => {
-      dimensions = _.keyBy(dimensions, 'slug')
-      return _.map(slugs, slug => dimensions[slug])
-    })
+  let dimensions = await Dimension.getAllByOrgIdAndSlugs(org.id, slugs)
+  dimensions = _.keyBy(dimensions, 'slug')
+  return _.map(slugs, slug => dimensions[slug])
 })
 
-// const segmentLoaderFn = Loader.withContext(async (slugs, context) => {
-//   const { orgId } = context
-//   return Segment.getAllByOrgIdAndSlugs(orgId, slugs)
-//     .then((segments) => {
-//       segments = _.keyBy(segments, 'slug')
-//       return _.map(slugs, slug => segments[slug])
-//     })
-// })
+const segmentLoaderFn = Loader.withContext(async (slugs, context) => {
+  const { org } = context
+  let segments = await Segment.getAllByOrgIdAndSlugs(org.id, slugs)
+  segments = _.keyBy(segments, 'slug')
+  return _.map(slugs, slug => segments[slug])
+})
 
 export default {
   Mutation: {
     datapointIncrement: async (rootValue, options, context) => {
       const {
-        metricSlug, dimensionValues, date, isTotal, isSingleTimeScale, timeScale = 'day'
-        // segmentSlugs
+        metricSlug, dimensionValues, date, segmentSlugs, isTotal, isSingleTimeScale, timeScale = 'day'
       } = options
       let { count } = options
       const { org } = context
 
       const metricLoader = await metricLoaderFn(context)
       const dimensionLoader = await dimensionLoaderFn(context)
+      const segmentLoader = await segmentLoaderFn(context)
       const metric = await metricLoader.load(metricSlug)
       const dimensions = await getDimensions(
         dimensionValues, { metricLoader, dimensionLoader }
       )
-      // TODO: get segmentIds from segmentSlugs
-      const segmentId = cknex.emptyUuid // TODO
+      const segments = Promise.map(_.filter(segmentSlugs), segmentLoader.load)
+      const segmentIds = [cknex.emptyUuid].concat(_.map(segments, 'id'))
       const scaledTime = Time.getScaledTimeByTimeScale(timeScale, date, org.timezone)
 
       setMetricFirstDatapointTimeIfNecessary(metric, date)
@@ -74,37 +69,39 @@ export default {
       if (isTotal) {
         // grab current values and adjust count accordingly
         // done for a single dimension so 'all' gets adjusted properly
-        if (dimensions.length > 2) { // 2 because all is added in
+        if (dimensions.length > 2 || !_.isEmpty(segmentSlugs)) { // 2 because 'all' is added in
           throw new Error('Can only set total for 1 dimension at a time')
         }
         count = await adjustCountForTotal({
           count,
           metric,
           dimension: dimensions[0],
-          segmentId,
+          segmentId: cknex.emptyUuid,
           timeScale,
           scaledTime
         })
       }
 
-      console.log('increment', metricSlug, isTotal, scaledTime, '...', count, segmentId)
+      console.log('increment', metricSlug, isTotal, scaledTime, '...', count, segmentIds)
 
-      await Promise.map(dimensions, async (dimension) => {
-        const datapoint = {
-          metricId: metric.id,
-          segmentId,
-          dimensionId: dimension.id,
-          dimensionValue: dimension.value,
-          timeScale,
-          scaledTime
-        }
+      await Promise.map(dimensions, async (dimension) =>
+        Promise.map(segmentIds, (segmentId) => {
+          const datapoint = {
+            metricId: metric.id,
+            segmentId,
+            dimensionId: dimension.id,
+            dimensionValue: dimension.value,
+            timeScale,
+            scaledTime
+          }
 
-        if (count && isSingleTimeScale) {
-          Datapoint.increment(datapoint, count)
-        } else if (count) {
-          Datapoint.incrementAllTimeScales(datapoint, count)
-        }
-      })
+          if (count && isSingleTimeScale) {
+            return Datapoint.increment(datapoint, count)
+          } else if (count) {
+            return Datapoint.incrementAllTimeScales(datapoint, count)
+          }
+        })
+      )
       return true
     },
 

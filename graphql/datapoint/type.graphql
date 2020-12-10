@@ -25,6 +25,7 @@ extend type Mutation {
     metricSlug: String!
     dimensionValues: JSONObject
     timeScale: String
+    segmentSlug: String
     isTotal: Boolean
     isSingleTimeScale: Boolean
     count: Int!

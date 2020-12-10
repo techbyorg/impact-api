@@ -24,6 +24,12 @@ class BlockModel extends Base {
               partitionKey: ['slug'],
               clusteringColumns: ['id']
             }
+          },
+          blocks_by_orgId: {
+            primaryKey: {
+              partitionKey: ['orgId'],
+              clusteringColumns: ['id']
+            }
           }
         }
       }

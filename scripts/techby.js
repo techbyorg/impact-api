@@ -16,6 +16,12 @@ setup().then(() => {
       id: 'a5d11a00-c873-11ea-942e-b58722db8c6e',
       slug: 'tech-by',
       name: 'TechBy',
+      blockIds: [
+        { id: 'cb2065b0-c90c-11ea-ad83-a4a485974815' },
+        { id: 'bb6292f0-382f-11eb-b4e8-4cb4ac447a3b' },
+        { id: '5ba12d40-382f-11eb-a72e-7df37af119eb' },
+        { id: '1cfb3430-3831-11eb-96c5-3985fe6a9524' }
+      ],
       orgId: ORG_ID
     }
   ]
@@ -39,8 +45,8 @@ setup().then(() => {
       orgId: ORG_ID
     },
     {
-      id: 'a644d1e0-c90c-11ea-b2a7-fe0de85c660a',
-      slug: 'fundraise-w1-retention',
+      id: '101677c0-3827-11eb-92ee-ef68a521c88b',
+      slug: 'impact-w1-retention',
       name: 'Week 1 retention',
       orgId: ORG_ID,
       type: 'derived',
@@ -48,13 +54,13 @@ setup().then(() => {
       transforms: [
         {
           operation: 'base',
-          metricId: '',
+          metricId: 'b4601e10-c90c-11ea-bab5-303a5ae9e8d8',
           dimensionId: config.RETENTION_DIMENSION_UUID,
           dimensionValue: 'w1'
         },
         {
           operation: '/',
-          metricId: '',
+          metricId: 'b4601e10-c90c-11ea-bab5-303a5ae9e8d8',
           dimensionId: config.RETENTION_DIMENSION_UUID,
           dimensionValue: 'w0'
         }
@@ -82,8 +88,9 @@ setup().then(() => {
   const blocks = [
     {
       id: 'cb2065b0-c90c-11ea-ad83-a4a485974815',
+      orgId: ORG_ID,
       slug: 'tech-by-active-users',
-      name: 'Active users',
+      name: 'TechBy active users',
       metricIds: [{ id: '8fa7c9b0-c90c-11ea-8e09-8b5eead937d6' }],
       dashboardId: 'a5d11a00-c873-11ea-942e-b58722db8c6e',
       settings: {
@@ -92,6 +99,7 @@ setup().then(() => {
     },
     // {
     //   id: '',
+    //   orgId: ORG_ID,
     //   slug: 'tech-by-overview',
     //   name: 'Overview',
     //   metricIds: [
@@ -106,9 +114,10 @@ setup().then(() => {
 
     // Fundraise
     {
-      id: 'cb2065b0-c90c-11ea-ad83-a4a485974815',
+      id: 'bb6292f0-382f-11eb-b4e8-4cb4ac447a3b',
+      orgId: ORG_ID,
       slug: 'fundraise-active-users',
-      name: 'Active users',
+      name: 'Fundraise active users',
       metricIds: [{ id: 'a644d1e0-c90c-11ea-b2a7-fe0de85c660a' }],
       dashboardId: 'a5d11a00-c873-11ea-942e-b58722db8c6e',
       settings: {
@@ -118,16 +127,31 @@ setup().then(() => {
 
     // Impact
     {
-      id: 'cb2065b0-c90c-11ea-ad83-a4a485974815',
+      id: '5ba12d40-382f-11eb-a72e-7df37af119eb',
+      orgId: ORG_ID,
       slug: 'impact-active-users',
-      name: 'Active users',
+      name: 'Impact active users',
       metricIds: [{ id: 'b4601e10-c90c-11ea-bab5-303a5ae9e8d8' }],
       dashboardId: 'a5d11a00-c873-11ea-942e-b58722db8c6e',
       settings: {
         type: 'line'
       }
     },
+
+    {
+      id: '1cfb3430-3831-11eb-96c5-3985fe6a9524',
+      orgId: ORG_ID,
+      slug: 'impact-w1-retention',
+      name: 'Impact week 1 retention',
+      metricIds: [{ id: '101677c0-3827-11eb-92ee-ef68a521c88b' }],
+      dashboardId: 'a5d11a00-c873-11ea-942e-b58722db8c6e',
+      settings: {
+        type: 'line'
+      }
+    }
   ]
+
+  console.log('blocks', blocks)
 
   Promise.all([
     Dashboard.batchUpsert(dashboards),

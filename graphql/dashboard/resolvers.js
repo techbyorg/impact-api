@@ -6,11 +6,7 @@ export default {
   Query: {
     dashboards: async (rootValue, { orgId }, { org }) => {
       orgId = orgId || org.id
-      let dashboards = await Dashboard.getAllByOrgId(orgId)
-      dashboards = await Permission.filterByOrgUser({
-        models: dashboards, orgUser: org.orgUser, sourceType: 'impact-dashboard', permissions: ['view']
-      })
-
+      const dashboards = await Dashboard.getAllByOrgId(orgId)
       return GraphqlFormatter.fromScylla(dashboards)
     },
 
@@ -23,7 +19,7 @@ export default {
       } else {
         let dashboards = await Dashboard.getAllByOrgId(orgId)
         dashboards = await Permission.filterByOrgUser({
-          models: dashboards, orgUser: org.orgUser, sourceType: 'impact-dashboard', permissions: ['view']
+          sourceModels: dashboards, orgUser: org.orgUser, sourceType: 'impact-dashboard', permissions: ['view']
         })
         return dashboards[0]
       }

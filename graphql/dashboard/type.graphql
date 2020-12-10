@@ -15,12 +15,11 @@ type DashboardConnection {
 }
 
 extend type Query {
-  dashboards(orgId: ID): DashboardConnection # @hasPermissions(sourceType: "global", permission: "view")
-  # TODO: certain roles having access to different sets of dashboards seems important... seems difficult though
-  dashboard(id: ID, orgId: String, slug: String): Dashboard # @hasPermissions(sourceType: "global", permission: "view")
+  dashboards(orgId: ID): DashboardConnection @hasPermissions(sourceType: "impact-dashboard", permission: "view", useResponse: true)
+  dashboard(id: ID, orgId: String, slug: String): Dashboard @hasPermissions(sourceType: "impact-dashboard", permission: "view", useResponse: true)
 }
 
 extend type Mutation {
-  dashboardUpsert(id: ID, name: String!): Dashboard
-  dashboardDeleteById(id: ID): Boolean
+  dashboardUpsert(id: ID, name: String!): Dashboard @hasPermissions(sourceType: "impact-dashboard", permission: "edit", useArgs: true)
+  dashboardDeleteById(id: ID): Boolean @hasPermissions(sourceType: "impact-dashboard", permission: "edit", useArgs: true)
 }

@@ -16,7 +16,11 @@ setup().then(() => {
       id: 'a4957da0-cf82-11ea-b9fd-74874934f95a',
       slug: 'main',
       name: 'Main',
-      orgId: ORG_ID
+      orgId: ORG_ID,
+      blockIds: [
+        { id: 'd4a73f10-cf82-11ea-81f8-721b2792aead' },
+        { id: '7f496e10-d34e-11ea-9f6e-16918ac6562e' }
+      ]
     }
   ]
 

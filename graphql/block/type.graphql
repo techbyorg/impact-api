@@ -14,14 +14,14 @@ type BlockConnection {
 }
 
 extend type Dashboard {
-  blocks(limit: Int): BlockConnection
+  blocks(limit: Int): BlockConnection @hasPermissions(sourceType: "impact-block", permission: "view", useResponse: true)
 }
 
 extend type Query {
-  block(id: ID, type: String, metricIds: [JSON]): Block
+  block(id: ID, type: String, metricIds: [JSON]): Block @hasPermissions(sourceType: "impact-block", permission: "view", useResponse: true)
 }
 
 extend type Mutation {
-  blockUpsert(id: ID, name: String!, dashboardId: ID, metricIds: JSON!, settings: JSON): Block
-  blockDeleteById(id: ID): Boolean
+  blockUpsert(id: ID, name: String!, dashboardId: ID, metricIds: JSON!, settings: JSON): Block @hasPermissions(sourceType: "impact-block", permission: "edit", useArgs: true)
+  blockDeleteById(id: ID): Boolean @hasPermissions(sourceType: "impact-block", permission: "edit", useArgs: true)
 }
