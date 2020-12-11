@@ -5,11 +5,17 @@ type Metric {
   name: String
   unit: String
   firstDatapointTime: Date
+  transforms: [Transform]
 }
 
 type MetricConnection {
   nodes: [Metric!]
   totalCount: Int
+}
+
+type Transform {
+  metricId: ID
+  operation: String
 }
 
 extend type Query {
@@ -18,4 +24,13 @@ extend type Query {
 
 extend type Block {
   metrics: MetricConnection
+}
+
+extend type Transform {
+  metric: Metric
+}
+
+extend type Mutation {
+  metricUpsert(id: ID, name: String!, unit: String, transforms: JSON): Metric @hasPermissions(sourceType: "impact-metric", permission: "edit", useArgs: true)
+  metricDeleteById(id: ID): Boolean @hasPermissions(sourceType: "impact-metric", permission: "edit", useArgs: true)
 }

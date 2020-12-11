@@ -21,7 +21,7 @@ class DimensionModel extends Base {
           clusteringColumns: ['orgId']
         },
         materializedViews: {
-          dimensions_by_orgId: {
+          dimensions_by_orgId_and_slug: {
             primaryKey: {
               partitionKey: ['orgId'],
               clusteringColumns: ['slug', 'id']
@@ -50,7 +50,7 @@ class DimensionModel extends Base {
 
   getByOrgIdAndSlug (orgId, slug) {
     return cknex().select('*')
-      .from('dimensions_by_orgId')
+      .from('dimensions_by_orgId_and_slug')
       .where('orgId', '=', orgId)
       .andWhere('slug', '=', slug)
       .run({ isSingle: true })
@@ -59,7 +59,7 @@ class DimensionModel extends Base {
 
   getAllByOrgIdAndSlugs (orgId, slugs) {
     return cknex().select('*')
-      .from('dimensions_by_orgId')
+      .from('dimensions_by_orgId_and_slug')
       .where('orgId', '=', orgId)
       .andWhere('slug', 'IN', slugs)
       .run()

@@ -30,5 +30,12 @@ export default {
       metrics = _.map(metrics, (metric) => ({ ...metric, _block: block }))
       return GraphqlFormatter.fromScylla(metrics)
     }
+  },
+
+  Transform: {
+    metric: async (transform, args, context) => {
+      console.log('get', transform.metricId)
+      return metricLoader(context).load(transform.metricId)
+    }
   }
 }

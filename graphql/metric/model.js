@@ -29,7 +29,7 @@ class MetricModel extends Base {
           clusteringColumns: ['orgId']
         },
         materializedViews: {
-          metrics_by_orgId: {
+          metrics_by_orgId_and_slug: {
             primaryKey: {
               partitionKey: ['orgId'],
               clusteringColumns: ['slug', 'id']
@@ -58,7 +58,7 @@ class MetricModel extends Base {
 
   getAllByOrgId (orgId) {
     return cknex().select('*')
-      .from('metrics_by_orgId')
+      .from('metrics_by_orgId_and_slug')
       .where('orgId', '=', orgId)
       .run()
       .map(this.defaultOutput)
@@ -66,7 +66,7 @@ class MetricModel extends Base {
 
   getByOrgIdAndSlug (orgId, slug) {
     return cknex().select('*')
-      .from('metrics_by_orgId')
+      .from('metrics_by_orgId_and_slug')
       .where('orgId', '=', orgId)
       .andWhere('slug', '=', slug)
       .run({ isSingle: true })
@@ -75,7 +75,7 @@ class MetricModel extends Base {
 
   getAllByOrgIdAndSlugs (orgId, slugs) {
     return cknex().select('*')
-      .from('metrics_by_orgId')
+      .from('metrics_by_orgId_and_slug')
       .where('orgId', '=', orgId)
       .andWhere('slug', 'IN', slugs)
       .run()

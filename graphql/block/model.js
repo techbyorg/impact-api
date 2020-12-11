@@ -16,19 +16,13 @@ class BlockModel extends Base {
         },
         primaryKey: {
           partitionKey: ['id'],
-          clusteringColumns: null
+          clusteringColumns: ['orgId']
         },
         materializedViews: {
-          blocks_by_slug: {
-            primaryKey: {
-              partitionKey: ['slug'],
-              clusteringColumns: ['id']
-            }
-          },
-          blocks_by_orgId: {
+          blocks_by_orgId_and_slug: {
             primaryKey: {
               partitionKey: ['orgId'],
-              clusteringColumns: ['id']
+              clusteringColumns: ['slug', 'id']
             }
           }
         }
