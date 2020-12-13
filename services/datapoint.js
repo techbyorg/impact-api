@@ -121,6 +121,7 @@ async function getDerivedDimensionValue ({ transforms }, { hash }, { metricLoade
       // TODO: loader? if there are ever any that pull from more than 1 unique
       const unique = transform.metricId && await Unique.get({
         metricId: transform.metricId,
+        segmentId: transform.segmentId,
         dimensionId: transform.dimensionId,
         dimensionValue: transform.dimensionValue,
         hash,

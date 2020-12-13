@@ -60,8 +60,10 @@ export default {
       const dimensions = await getDimensions(
         dimensionValues, { metricLoader, dimensionLoader }
       )
-      const segments = Promise.map(_.filter(segmentSlugs), segmentLoader.load)
-      const segmentIds = [cknex.emptyUuid].concat(_.map(segments, 'id'))
+      const segments = await Promise.map(_.filter(segmentSlugs), (segmentSlug) =>
+        segmentLoader.load(segmentSlug)
+      )
+      const segmentIds = _.map(segments, 'id').concat(cknex.emptyUuid)
       const scaledTime = Time.getScaledTimeByTimeScale(timeScale, date, org.timezone)
 
       setMetricFirstDatapointTimeIfNecessary(metric, date)
@@ -69,14 +71,14 @@ export default {
       if (isTotal) {
         // grab current values and adjust count accordingly
         // done for a single dimension so 'all' gets adjusted properly
-        if (dimensions.length > 2 || !_.isEmpty(segmentSlugs)) { // 2 because 'all' is added in
-          throw new Error('Can only set total for 1 dimension at a time')
+        if (dimensions.length > 2 || segments.length > 2) { // 2 because 'all' is added in
+          throw new Error('Can only set total for 1 dimension/segment at a time')
         }
         count = await adjustCountForTotal({
           count,
           metric,
           dimension: dimensions[0],
-          segmentId: cknex.emptyUuid,
+          segmentId: segmentIds[0],
           timeScale,
           scaledTime
         })
@@ -105,34 +107,38 @@ export default {
       return true
     },
 
-    datapointIncrementUnique: async (rootValue, { metricSlug, segmentSlugs, hash, date }, { org }) => {
-      // console.log('inc uniq', org)
+    datapointIncrementUnique: async (rootValue, { metricSlug, segmentSlugs, hash, date }, context) => {
+      const { org } = context
+      const segmentLoader = await segmentLoaderFn(context)
       const potentiallyHashed = hash
       // clients should be hashing, but we'll hash just in case they don't
       hash = crypto.createHash('sha256').update(potentiallyHashed).digest('base64')
-      await incrementUnique({ metricSlug, segmentSlugs, hash, date, org })
+      const segments = await Promise.map(_.filter(segmentSlugs), (segmentSlug) =>
+        segmentLoader.load(segmentSlug)
+      )
+      const segmentIds = _.map(segments, 'id').concat(cknex.emptyUuid)
+      await Promise.map(segmentIds, (segmentId) =>
+        incrementUnique({ metricSlug, segmentId, hash, date, org })
+      )
       return true
     }
   }
 }
 async function incrementUnique (options) {
   const {
-    metricSlug, dimensionId, dimensionValue, hash, date, org
-    // segmentSlugs
+    metricSlug, dimensionId, dimensionValue, segmentId, hash, date, org
   } = options
   const cachePrefix = LOCK_PREFIXES.DATAPOINT_INCREMENT_UNIQUE
-  const cacheKey = `${cachePrefix}:${metricSlug}:${dimensionId}:${dimensionValue}:${hash}`
+  const cacheKey = `${cachePrefix}:${metricSlug}:${dimensionId}:${dimensionValue}:${segmentId}:${hash}1`
   // not atomic due to unique lookups, so we lock during call
   Cache.lock(cacheKey, async () => {
     // console.log('inc unique', metricSlug, hash)
     const metric = await Metric.getByOrgIdAndSlug(org.id, metricSlug)
     setMetricFirstDatapointTimeIfNecessary(metric, date)
-    // TODO: get segmentIds from segmentSlugs
-    const segmentId = cknex.emptyUuid // TODO
     const scaledTimes = Time.getScaledTimesByTimeScales(Datapoint.TIME_SCALES, date, org.timezone)
     const timeScalesByScaledTime = _.zipObject(scaledTimes, Datapoint.TIME_SCALES)
     const uniques = await Unique.getAll({
-      metricId: metric.id, dimensionId, dimensionValue, hash, scaledTimes
+      metricId: metric.id, segmentId, dimensionId, dimensionValue, hash, scaledTimes
     })
     const allUnique = _.find(uniques, { scaledTime: 'ALL:ALL' })
     // track retention for any unique metric. retention is hour-based not calendar-day based.
@@ -147,9 +153,9 @@ async function incrementUnique (options) {
         if (countSinceAllUnique <= max) {
           return incrementUnique({
             metricSlug,
-            // segementSlugs,
             dimensionId: config.RETENTION_DIMENSION_UUID,
             dimensionValue: `${prefix}${countSinceAllUnique}`,
+            segmentId,
             hash,
             // eg if today is 1/8 and addTime was 1/1, it's D7 for 1/1
             date: allUnique?.addTime,
@@ -165,7 +171,7 @@ async function incrementUnique (options) {
       // console.log('inc uniq', metricSlug, dimensionValue, scaledTime)
       return Promise.all([
         Unique.upsert({
-          metricId: metric.id, dimensionId, dimensionValue, hash, scaledTime, addTime: date
+          metricId: metric.id, segmentId, dimensionId, dimensionValue, hash, scaledTime, addTime: date
         }),
         Datapoint.increment({
           metricId: metric.id,

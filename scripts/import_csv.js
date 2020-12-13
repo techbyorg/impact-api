@@ -1,6 +1,4 @@
 /*
-// TODO: segment
-
 columns = metrics or dimensions
 rows = datapoints
 
@@ -41,7 +39,7 @@ initImpact({
   }).fromFile('./scripts/rbu.csv')
 
   const dateIndex = 5
-  const segmentSlug = 'partner-demo'
+  const segmentSlugs = ['partner-demo']
 
   const dimensionIndices = [
     {
@@ -140,14 +138,14 @@ initImpact({
   console.log(datapoints)
   console.log(uniqueValues)
 
-  await Promise.map(datapoints, ({ metricSlug, scaledTime, count }, i) => {
-    console.log(i)
-    const date = Time.scaledTimeToUTC(scaledTime)
-    return incrementMetric(metricSlug, {}, count, { date, segmentSlug, isTotal: true, timeScale: 'day' })
-  }, { concurrency: 1 })
+  // await Promise.map(datapoints, ({ metricSlug, scaledTime, count }, i) => {
+  //   console.log(i)
+  //   const date = Time.scaledTimeToUTC(scaledTime)
+  //   return incrementMetric(metricSlug, {}, count, { date, segmentSlugs, isTotal: true, timeScale: 'day' })
+  // }, { concurrency: 1 })
 
   await Promise.map(uniqueValues, ({ date, metricSlug, hash }) => {
-    return incrementUnique(metricSlug, hash, { date, segmentSlug })
+    return incrementUnique(metricSlug, hash, { date, segmentSlugs })
   }, { concurrency: 1 })
   console.log('done')
 })()

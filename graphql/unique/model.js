@@ -9,6 +9,7 @@ class UniqueModel extends Base {
         keyspace: 'impact',
         fields: {
           metricId: 'uuid',
+          segmentId: { type: 'uuid', defaultFn: () => cknex.emptyUuid }, // for have different dashboards per sub-org or corporate sponsor
           dimensionId: { type: 'uuid', defaultFn: () => cknex.emptyUuid }, // eg state, zip
           dimensionValue: { type: 'text', defaultFn: () => 'all' },
           scaledTime: 'text',
@@ -20,19 +21,21 @@ class UniqueModel extends Base {
         // not doing it ahead of time, because it'd be easy for a partition to get
         // 100mb+ w/ 2-3 million hashes
         primaryKey: {
-          partitionKey: ['metricId', 'dimensionId', 'dimensionValue', 'hash'],
+          partitionKey: ['metricId', 'segmentId', 'dimensionId', 'dimensionValue', 'hash'],
           clusteringColumns: ['scaledTime']
         }
       }
     ]
   }
 
-  getAll ({ metricId, dimensionId, dimensionValue, hash, scaledTimes }) {
+  getAll ({ metricId, segmentId, dimensionId, dimensionValue, hash, scaledTimes }) {
+    segmentId = segmentId || cknex.emptyUuid
     dimensionId = dimensionId || cknex.emptyUuid
     dimensionValue = dimensionValue || 'all'
     return cknex().select('*')
       .from('uniques_by_metricId_and_hash')
       .where('metricId', '=', metricId)
+      .andWhere('segmentId', '=', segmentId)
       .andWhere('dimensionId', '=', dimensionId)
       .andWhere('dimensionValue', '=', dimensionValue)
       .andWhere('hash', '=', hash)
@@ -41,12 +44,14 @@ class UniqueModel extends Base {
       .map(this.defaultOutput)
   }
 
-  get ({ metricId, dimensionId, dimensionValue, hash, scaledTime }) {
+  get ({ metricId, segmentId, dimensionId, dimensionValue, hash, scaledTime }) {
+    segmentId = segmentId || cknex.emptyUuid
     dimensionId = dimensionId || cknex.emptyUuid
     dimensionValue = dimensionValue || 'all'
     return cknex().select('*')
       .from('uniques_by_metricId_and_hash')
       .where('metricId', '=', metricId)
+      .andWhere('segmentId', '=', segmentId)
       .andWhere('dimensionId', '=', dimensionId)
       .andWhere('dimensionValue', '=', dimensionValue)
       .andWhere('hash', '=', hash)

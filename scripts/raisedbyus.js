@@ -107,6 +107,7 @@ setup().then(() => {
     {
       id: '9d5c66d4-e3d1-11ea-b1e5-62ef017b7d0f',
       slug: 'donations',
+      orgId: ORG_ID,
       name: 'Donations',
       metricIds: [{ id: '9d5c18b0-e3d1-11ea-9d76-11d12d2ed70b' }],
       settings: {
@@ -116,6 +117,7 @@ setup().then(() => {
     {
       id: '165fad70-e568-11ea-b834-c6fe1394a0ba',
       slug: 'avg-donation-amount',
+      orgId: ORG_ID,
       name: 'Avg donation amount',
       metricIds: [{ id: '0ac47c70-e568-11ea-bb55-b7b0bcdd5d5b' }],
       settings: {
@@ -125,6 +127,7 @@ setup().then(() => {
     {
       id: '1d3bb340-e569-11ea-bc23-8b438c098378',
       slug: 'donation-sum',
+      orgId: ORG_ID,
       name: 'Total donated',
       metricIds: [{ id: '9d5c3fc0-e3d1-11ea-a457-ce46582889c2' }],
       settings: {
@@ -134,6 +137,7 @@ setup().then(() => {
     {
       id: '4856b330-e574-11ea-8757-1f7253836ec0',
       slug: 'donation-by-company-sum',
+      orgId: ORG_ID,
       name: 'Total donated by company',
       metricIds: [{ id: '9d5c66d0-e3d1-11ea-938b-c93d02a7ef5a' }],
       settings: {
@@ -143,6 +147,7 @@ setup().then(() => {
     {
       id: 'de93d380-e56c-11ea-b91e-eda2e4dac984',
       slug: 'unique-donors',
+      orgId: ORG_ID,
       name: 'Unique donors',
       metricIds: [{ id: '9d5c66d1-e3d1-11ea-988b-086f67bc7d85' }],
       settings: {

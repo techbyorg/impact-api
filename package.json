@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@apollo/federation": "^0.16.0",
-    "@techby/impact": "0.0.9",
+    "@techby/impact": "0.0.11",
     "apollo-server-express": "^2.14.2",
     "assert-none-missing": "github:claydotio/assert-none-missing#es",
     "backend-shared": "file:backend-shared",
