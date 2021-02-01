@@ -128,6 +128,9 @@ async function incrementUnique (options) {
   const {
     metricSlug, dimensionId, dimensionValue, segmentId, hash, date, org
   } = options
+  if (!org) {
+    return console.log('missing org', options)
+  }
   const cachePrefix = LOCK_PREFIXES.DATAPOINT_INCREMENT_UNIQUE
   const cacheKey = `${cachePrefix}:${metricSlug}:${dimensionId}:${dimensionValue}:${segmentId}:${hash}1`
   // not atomic due to unique lookups, so we lock during call
